@@ -3,6 +3,7 @@ package hello.jpa.basic;
 import hello.jpa.BasicAndRelation.Member;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @Commit
+@Slf4j
 class BasicTest {
     @PersistenceContext
     private EntityManager em;
@@ -26,8 +28,9 @@ class BasicTest {
 
         //select 쿼리 안나타남
         Member selectMember = em.find(Member.class, member.getId());
-        System.out.println("아이디 : " + selectMember.getId());
-        System.out.println("이름 : " + selectMember.getName());
+
+        log.info("아이디 : {}", selectMember.getId());
+        log.info("이름 : {}", selectMember.getName());
 
         em.flush();
         em.clear();
@@ -61,7 +64,7 @@ class BasicTest {
         //Insert 쿼리 수행
         em.flush();
 
-        System.out.println("==========");
+        log.info("==========");
     }
     
     @Test
@@ -74,7 +77,7 @@ class BasicTest {
         Member selectMember2 = em.find(Member.class, member.getId());
 
         //1차 캐시를 통해 같은 식별자(@Id 값)에 대해 매번 같은 인스턴스에 접근하게 되므로 동일성이 보장
-        System.out.println("selectMember1 == selectMember2 : " + (selectMember1 == selectMember2));
+        log.info("selectMember1 == selectMember2 : {}", selectMember1 == selectMember2);
     }
 
     @Test
@@ -82,17 +85,17 @@ class BasicTest {
     void write_behind() {
         Member member1 = new Member(++sequence, "홍길동");
 
-        System.out.println("== member1 before ==");
+        log.info("== member1 before ==");
         //쓰기 지연 SQL 저장소에 쿼리 저장
         em.persist(member1);
-        System.out.println("== member1 after ==");
+        log.info("== member1 after ==");
 
         Member member2 = new Member(++sequence, "박길동");
 
-        System.out.println("== member2 before ==");
+        log.info("== member2 before ==");
         //쓰기 지연 SQL 저장소에 쿼리 저장
         em.persist(member2);
-        System.out.println("== member2 after ==");
+        log.info("== member2 after ==");
 
         //커밋하는 순간 데이터베이스에 쓰기 지연 SQL 저장소에 있는 쿼리를 날린다.
     }

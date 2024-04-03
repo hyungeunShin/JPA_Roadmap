@@ -2,6 +2,7 @@ package hello.jpa.KeyStrategy;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @Commit
+@Slf4j
 class KeyTest {
     @PersistenceContext
     private EntityManager em;
@@ -23,9 +25,9 @@ class KeyTest {
         key.setName("홍길동");
 
         //em.persist()할 때 insert 실행
-        System.out.println("==========");
+        log.info("==========");
         em.persist(key);
-        System.out.println("==========");
+        log.info("==========");
     }
 
     @Test
@@ -46,10 +48,10 @@ class KeyTest {
         JPA 가 sequence 에 접근 횟수를 줄이기 위해 allocationSize 를 활용한다.
         allocationSize 에 설정 값 만큼 DB에 sequence 를 증가 시키고 그만큼 Memory 에 sequence 값을 할당한다.
         */
-        System.out.println("==========");
+        log.info("==========");
         em.persist(key1);
         em.persist(key2);
         em.persist(key3);
-        System.out.println("==========");
+        log.info("==========");
     }
 }

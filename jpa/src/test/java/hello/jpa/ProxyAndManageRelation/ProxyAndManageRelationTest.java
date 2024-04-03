@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @Commit
+@Slf4j
 class ProxyAndManageRelationTest {
     @PersistenceUnit
     EntityManagerFactory emf;
@@ -34,19 +36,19 @@ class ProxyAndManageRelationTest {
         //select 쿼리 나감
         //em.find(Parent.class, parent.getId());
 
-        System.out.println("==========");
+        log.info("==========");
         //select 쿼리 안나감
         Parent findParent = em.getReference(Parent.class, parent.getId());  //proxy 객체 생성
-        System.out.println("==========");
+        log.info("==========");
 
         //지금 시점에 select 쿼리 나감
         //target 초기화 후 프록시 객체를 통해서 실제 엔티티에 접근(target.getName() 호출)
-        System.out.println("member.name : " + findParent.getName());
+        log.info("member.name : {}", findParent.getName());
 
         //class hello.jpa.ProxyAndManageRelation.Parent$HibernateProxy$DyaWY4se
-        System.out.println(findParent.getClass());
+        log.info("{}", findParent.getClass());
 
-        System.out.println("isLoaded : " + emf.getPersistenceUnitUtil().isLoaded(findParent));
+        log.info("isLoaded : {}", emf.getPersistenceUnitUtil().isLoaded(findParent));
     }
 
     @Test
@@ -92,7 +94,7 @@ class ProxyAndManageRelationTest {
 
         Parent p = c.getParent();
         //class hello.jpa.ProxyAndManageRelation.Parent$HibernateProxy$DyaWY4se
-        System.out.println("p : " + p.getClass());
+        log.info("p : {}", p.getClass());
 
         //parent 의 select 쿼리 나감
         Hibernate.initialize(p);

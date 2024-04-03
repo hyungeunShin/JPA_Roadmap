@@ -4,6 +4,8 @@ import hello.jpa.BasicAndRelation.Member;
 import hello.jpa.BasicAndRelation.Team;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 @Commit
+@Slf4j
 class RelationTest {
     @PersistenceContext
     private EntityManager em;
@@ -57,9 +60,9 @@ class RelationTest {
 
         Member findMember = em.find(Member.class, member.getId());
         Team findTeam = findMember.getTeam();
-        System.out.println("findTeam : " + findTeam.getName());
+        log.info("findTeam : {}", findTeam.getName());
         findTeam.getMembers().forEach(m -> {
-            System.out.println("memberName : " + m.getName());
+            log.info("memberName : {}", m.getName());
         });
 
         Team teamB = new Team(++teamSeq, "TeamB");
@@ -81,9 +84,10 @@ class RelationTest {
         em.clear();
 
         Member findMember = em.find(Member.class, member.getId());
-        System.out.println("findMember.id : " + findMember.getId());
+        log.info("findMember.id : {}", findMember.getId());
         //Member 의 team_id는 null
-        System.out.println("findMember.team_id : " + findMember.getTeam().getId());
+        //log.info("findMember.team_id : {}", findMember.getTeam().getId());
+        Assertions.assertThatThrownBy(() -> findMember.getTeam().getId()).isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -100,8 +104,8 @@ class RelationTest {
         em.clear();
 
         Member findMember = em.find(Member.class, member.getId());
-        System.out.println("findMember.id : " + findMember.getId());
-        System.out.println("findMember.team_id : " + findMember.getTeam().getId());
+        log.info("findMember.id : {}", findMember.getId());
+        log.info("findMember.team_id : {}", findMember.getTeam().getId());
     }
 
     @Test
@@ -125,10 +129,10 @@ class RelationTest {
         그렇기 때문에 순수객체 상태를 고려하여 양방향 연결을 했으면 양쪽에 값을 세팅해야 한다.
         */
         Team findTeam = em.find(Team.class, team.getId());
-        System.out.println("==========");
+        log.info("==========");
         findTeam.getMembers().forEach(m -> {
-            System.out.println("member : " + m.getName());
+            log.info("member : {}", m.getName());
         });
-        System.out.println("==========");
+        log.info("==========");
     }
 }
