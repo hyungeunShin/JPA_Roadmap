@@ -34,7 +34,7 @@ class JoinTest {
     
     @Test
     @DisplayName("내부 조인")
-    void innerJoin() {
+    void test1() {
         Team team = new Team();
         team.setName("A");
         em.persist(team);
@@ -56,7 +56,7 @@ class JoinTest {
 
     @Test
     @DisplayName("외부 조인")
-    void outerJoin() {
+    void test2() {
         Team team = new Team();
         team.setName("B");
         em.persist(team);
@@ -78,7 +78,7 @@ class JoinTest {
 
     @Test
     @DisplayName("세타 조인")
-    void thetaJoin() {
+    void test3() {
         Team team = new Team();
         team.setName("C");
         em.persist(team);
@@ -101,7 +101,7 @@ class JoinTest {
 
     @Test
     @DisplayName("ON 절을 활용한 조인 대상 필터링")
-    void joinTargetFiltering() {
+    void test4() {
         Team team = new Team();
         team.setName("D");
         em.persist(team);
@@ -123,7 +123,7 @@ class JoinTest {
 
     @Test
     @DisplayName("ON 절을 활용한 연관관계 없는 엔티티 외부 조인")
-    void nonRelationJoin() {
+    void test5() {
         Team team = new Team();
         team.setName("D");
         em.persist(team);

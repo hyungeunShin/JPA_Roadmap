@@ -40,7 +40,7 @@ class GeneralFunctionTest {
 
     @Test
     @DisplayName("문자열 합치기")
-    void concat() {
+    void test1() {
         Member member = new Member(null, 10);
         em.persist(member);
 
@@ -58,7 +58,7 @@ class GeneralFunctionTest {
 
     @Test
     @DisplayName("문자열 찾기")
-    void locate() {
+    void test2() {
         Member member = new Member(null, 10);
         em.persist(member);
 
@@ -75,7 +75,7 @@ class GeneralFunctionTest {
 
     @Test
     @DisplayName("컬렉션 크기")
-    void size() {
+    void test3() {
         Team team = new Team();
         team.setName("팀");
         em.persist(team);
@@ -101,7 +101,7 @@ class GeneralFunctionTest {
 
     @Test
     @DisplayName("사용자 정의 함수")
-    void customFunction() {
+    void test4() {
         Member member1 = new Member("홍길동", 10);
         Member member2 = new Member("박길동", 20);
         

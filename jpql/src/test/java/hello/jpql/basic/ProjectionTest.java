@@ -45,7 +45,7 @@ class ProjectionTest {
 
     @Test
     @DisplayName("엔티티 프로젝션")
-    void entityProjection() {
+    void test1() {
         Team team = new Team();
         team.setName("팀");
         em.persist(team);
@@ -70,7 +70,7 @@ class ProjectionTest {
 
     @Test
     @DisplayName("임베디드 타입 프로젝션")
-    void embeddedProjection() {
+    void test2() {
         Order order = new Order();
         order.setAddress(new Address("111", "222", "333"));
         em.persist(order);
@@ -86,7 +86,7 @@ class ProjectionTest {
 
     @Test
     @DisplayName("스칼라 타입 프로젝션")
-    void scalarProjection() {
+    void test3() {
         Member member = new Member("홍길동", 10);
         em.persist(member);
 

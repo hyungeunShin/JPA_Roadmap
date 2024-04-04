@@ -47,8 +47,8 @@ class FetchJoin2Test {
     @PersistenceContext
     private EntityManager em;
 
-    @BeforeEach
     @Commit
+    @BeforeEach
     void before() {
         Team team1 = new Team();
         team1.setName("팀1");
@@ -78,8 +78,8 @@ class FetchJoin2Test {
         em.clear();
     }
 
-    @AfterEach
     @Commit
+    @AfterEach
     void after() {
         em.createQuery("delete from Member m").executeUpdate();
         em.createQuery("delete from Team t").executeUpdate();
@@ -178,7 +178,7 @@ class FetchJoin2Test {
     }
 
     @Test
-    @DisplayName("컬렉션 fetch join 시 페이징 X")
+    @DisplayName("컬렉션 fetch join 시 페이징 대안")
     void test7() {
         /*
         //HHH90003004: firstResult/maxResults specified with collection fetch; applying in memory

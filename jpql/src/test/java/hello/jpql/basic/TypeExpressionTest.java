@@ -84,13 +84,13 @@ class TypeExpressionTest {
     @DisplayName("타입 변환")
     void test3() {
         Book book = new Book();
-        book.setName("책책책");
+        book.setName("책");
         book.setPrice(1000);
-        book.setAuthor("작가가가");
+        book.setAuthor("작가");
 
         Movie movie = new Movie();
-        movie.setName("영화화화");
-        movie.setActor("배우우우");
+        movie.setName("영화");
+        movie.setActor("배우");
         movie.setPrice(10000);
 
         em.persist(book);

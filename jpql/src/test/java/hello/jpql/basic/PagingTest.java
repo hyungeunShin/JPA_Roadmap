@@ -27,7 +27,7 @@ class PagingTest {
 
     @Test
     @DisplayName("페이징 API")
-    void paging() {
+    void test1() {
         for(int i = 0; i < 100; i++) {
             Member member = new Member("Member" + i, i);
             em.persist(member);
