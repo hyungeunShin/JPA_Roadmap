@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html th:replace="~{login/loginTemplate :: loginLayout(~{::div[@class='login-box']}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
+
+<div class="login-box">
+	<div class="card card-outline card-primary">
+		<div class="card-header text-center">
+			<p class="h4">
+				<b>아이디찾기</b>
+			</p>
+		</div>
+		
+		<div class="card-body">
+			<p class="login-box-msg">아이디 찾기는 전화번호, 이름을 입력하여 찾을 수 있습니다.</p>
+			
+			<form action="" method="post">
+				<div class="input-group mb-3">
+					<input type="text" class="form-control" name="memName" id="memName" placeholder="이름을 입력해주세요.">
+				</div>
+
+				<div class="input-group mb-3">
+					<input type="text" class="form-control" name="memPhone" id="memPhone" placeholder="전화번호를 입력해주세요.">
+				</div>
+				
+				<div class="row">
+					<div class="col-12">
+						<button type="button" class="btn btn-primary btn-block" id="idFindBtn">아이디찾기</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	<br />
+	
+	<div class="card card-outline card-primary">
+		<div class="card-header text-center">
+			<p href="" class="h4">
+				<b>비밀번호찾기</b>
+			</p>
+		</div>
+		
+		<div class="card-body">
+			<p class="login-box-msg">비밀번호 찾기는 아이디, 전화번호, 이름을 입력하여 찾을 수 있습니다.</p>
+			
+			<form action="" method="post">
+				<div class="input-group mb-3">
+					<input type="text" class="form-control" id="memId2" name="memId2" placeholder="아이디를 입력해주세요.">
+				</div>
+
+				<div class="input-group mb-3">
+					<input type="text" class="form-control" id="memName2" name="memName2" placeholder="이름을 입력해주세요.">
+				</div>
+
+				<div class="input-group mb-3">
+					<input type="text" class="form-control" id="memPhone2" name="memPhone2" placeholder="전화번호를 입력해주세요.">
+				</div>
+				
+				<div class="row">
+					<div class="col-12">
+						<button type="button" class="btn btn-primary btn-block" id="pwFindBtn">비밀번호찾기</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	<br/>
+	
+	<div class="card card-outline card-secondary">
+		<div class="card-header text-center">
+			<h4>MAIN MENU</h4>
+			<button type="button" class="btn btn-secondary btn-block" id="loginBtn" th:onclick="|location.href='@{/login}'|">로그인</button>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+(function(W, D, $) {
+	'use strict';
+	W.$Forget = W.$Forget || {};
+	
+	$(document).ready(function() {
+		$Forget.ui.pageLoad();
+	});
+	
+	$Forget.ui = {
+		pageLoad: function() {
+			$("#idFindBtn").on("click", function() {
+				let phone = $.trim($("#memPhone").val());
+				let name = $.trim($("#memName").val());
+				
+				if(phone == "") {
+					return alert("전화번호를 입력해주세요");
+				}
+				
+				if(name == "") {
+					return alert("이름을 입력해주세요");
+				}
+				console.log(phone)
+				console.log(name)
+				fetch("/idForget", {
+					headers: {
+						"Content-Type": "application/json"
+					},
+					method: "post",
+					body: JSON.stringify({
+						memPhone : phone,
+						memName : name
+					})
+				})
+				.then(response => response.text())
+				.then(result => {
+					if(result) {
+						alert("사용자의 아이디는 " + result + " 입니다.");
+					} else {
+						alert("존재하지 않는 회원입니다.");
+					}
+				})
+			});
+			
+			$("#pwFindBtn").on("click", function() {
+				let phone = $.trim($("#memPhone2").val());
+				let name = $.trim($("#memName2").val());
+				let id = $.trim($("#memId2").val());
+				
+				if(id == "") {
+					return alert("아이디를 입력해주세요");
+				}
+				
+				if(phone == "") {
+					return alert("전화번호를 입력해주세요");
+				}
+				
+				if(name == "") {
+					return alert("이름을 입력해주세요");
+				}
+				
+				fetch("pwForget", {
+					headers: {
+						"Content-Type": "application/json"
+					},
+					method: "post",
+					body: JSON.stringify({
+						memId: id,
+						memName: name,
+						memPhone: phone
+					})
+				})
+				.then(response => response.text())
+				.then(result => {
+					if(result) {
+						alert("사용자의 비밀번호는 " + result + " 입니다.");
+					} else {
+						alert("존재하지 않는 회원입니다.");
+					}
+				})
+			});
+		}
+	};
+}(window, document, jQuery))
+</script>
