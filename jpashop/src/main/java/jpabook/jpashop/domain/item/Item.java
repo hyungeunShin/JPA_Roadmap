@@ -3,9 +3,8 @@ package jpabook.jpashop.domain.item;
 import jakarta.persistence.*;
 import jpabook.jpashop.domain.Category;
 import jpabook.jpashop.exception.NotEnoughStockException;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "dtype")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
 public abstract class Item {
     @Id
     @GeneratedValue
@@ -30,31 +29,15 @@ public abstract class Item {
     @ManyToMany(mappedBy = "items")
     private List<Category> categories = new ArrayList<>();
 
-    public Item(String name, int price, int quantity) {
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-    }
-
-    public Item(Long id, String name, int price, int quantity) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-    }
-
-    //비즈니스 로직
     public void addStock(int quantity) {
         this.quantity += quantity;
     }
 
     public void decreaseStock(int quantity) throws NotEnoughStockException {
-        int rest = this.quantity - quantity;
-
-        if(rest < 0) {
-            throw new NotEnoughStockException("재고 부족");
+        int restStock = this.quantity - quantity;
+        if(restStock < 0) {
+            throw new NotEnoughStockException("need more stock");
         }
-
-        this.quantity = rest;
+        this.quantity = restStock;
     }
 }

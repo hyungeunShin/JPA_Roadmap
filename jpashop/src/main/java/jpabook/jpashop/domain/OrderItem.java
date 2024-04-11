@@ -1,15 +1,15 @@
 package jpabook.jpashop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.exception.NotEnoughStockException;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
 public class OrderItem {
     @Id
     @GeneratedValue
@@ -20,6 +20,7 @@ public class OrderItem {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
@@ -28,24 +29,18 @@ public class OrderItem {
 
     private int count;
 
-    public OrderItem(Item item, int orderPrice, int count) {
-        this.item = item;
-        this.orderPrice = orderPrice;
-        this.count = count;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
     public static OrderItem createOrderItem(Item item, int orderPrice, int count) throws NotEnoughStockException {
-        OrderItem orderItem = new OrderItem(item, orderPrice, count);
+        OrderItem orderItem = new OrderItem();
+        orderItem.setItem(item);
+        orderItem.setOrderPrice(orderPrice);
+        orderItem.setCount(count);
+
         item.decreaseStock(count);
         return orderItem;
     }
 
     public void cancel() {
-        getItem().addStock(this.count);
+        getItem().addStock(count);
     }
 
     public int getTotalPrice() {

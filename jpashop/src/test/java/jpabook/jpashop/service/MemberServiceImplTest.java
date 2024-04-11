@@ -23,7 +23,8 @@ class MemberServiceImplTest {
     @Test
     void join() {
         //given
-        Member member = new Member("kim");
+        Member member = new Member();
+        member.setName("kim");
 
         //when
         Long saveId = service.join(member);
@@ -36,8 +37,10 @@ class MemberServiceImplTest {
     @Test
     void joinException() throws Exception {
         //given
-        Member member1 = new Member("kim");
-        Member member2 = new Member("kim");
+        Member member1 = new Member();
+        member1.setName("kim");
+        Member member2 = new Member();
+        member2.setName("kim");
 
         //when
         service.join(member1);

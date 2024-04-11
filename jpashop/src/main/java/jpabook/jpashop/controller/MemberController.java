@@ -33,8 +33,15 @@ public class MemberController {
         }
 
         Address address = new Address(form.getCity(), form.getStreet(), form.getZipcode());
-        Member member = new Member(form.getName(), address);
-        service.join(member);
+        Member member = new Member();
+        member.setName(form.getName());
+        member.setAddress(address);
+
+        try {
+            service.join(member);
+        } catch(IllegalStateException e) {
+            return "members/createMemberForm";
+        }
 
         return "redirect:/";
     }

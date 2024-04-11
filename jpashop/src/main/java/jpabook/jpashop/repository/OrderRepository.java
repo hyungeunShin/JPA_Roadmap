@@ -1,9 +1,9 @@
 package jpabook.jpashop.repository;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import jpabook.jpashop.api.dto.OrderSimpleQueryDto;
 import jpabook.jpashop.controller.dto.PaginationInfo;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderStatus;
@@ -30,6 +30,19 @@ public class OrderRepository {
 
     public Order findOne(Long id) {
         return em.find(Order.class, id);
+    }
+
+    public List<Order> findAll() {
+        return em.createQuery("select o from Order o join o.member m", Order.class).setMaxResults(1000).getResultList();
+    }
+
+    public List<Order> findAllWithMemberDelivery() {
+        return em.createQuery("select o from Order o join fetch o.member m join fetch o.delivery d", Order.class).getResultList();
+    }
+
+    public List<OrderSimpleQueryDto> findOrderDto() {
+        return em.createQuery("select new jpabook.jpashop.api.dto.OrderSimpleQueryDto(o.id, m.name, o.orderDate, o.status, d.address) from Order o join o.member m join o.delivery d"
+                        , OrderSimpleQueryDto.class).getResultList();
     }
 
     public List<Order> findAllByQuerydsl(PaginationInfo<Order> paginationInfo) {

@@ -10,4 +10,6 @@ public interface MemberService {
     List<Member> findMembers();
 
     Member findOne(Long memberId);
+
+    void update(Long id, String name);
 }

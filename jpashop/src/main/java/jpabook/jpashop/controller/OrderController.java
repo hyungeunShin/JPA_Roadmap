@@ -44,6 +44,7 @@ public class OrderController {
         try {
             orderService.order(memberId, itemId, count);
             ra.addFlashAttribute("message", "주문이 완료되었습니다.");
+            return "redirect:/orders";
         } catch(NotEnoughStockException e) {
             Item item = itemService.findOne(itemId);
             model.addAttribute("message", "재고가 부족합니다.\n" + item.getName() + "의 재고는 " + item.getQuantity() + "개 입니다.");
@@ -55,11 +56,11 @@ public class OrderController {
             model.addAttribute("itemId", itemId);
             return "order/orderForm";
         }
-        return "redirect:/orders";
     }
 
     @GetMapping(value = "/orders")
-    public String orderList(@RequestParam(name = "page", required = false, defaultValue = "1") int currentPage, @RequestParam(name = "orderStatus", required = false) OrderStatus orderStatus
+    public String orderList(@RequestParam(name = "page", required = false, defaultValue = "1") int currentPage
+            , @RequestParam(name = "orderStatus", required = false) OrderStatus orderStatus
             , @RequestParam(name = "memberName", required = false) String memberName, Model model) {
         PaginationInfo<Order> paginationInfo = new PaginationInfo<>();
         paginationInfo.setCurrentPage(currentPage);

@@ -29,7 +29,9 @@ public class OrderServiceImpl implements OrderService {
         Item item = itemRepository.findOne(itemId);
 
         //배송정보 생성
-        Delivery delivery = new Delivery(member.getAddress(), DeliveryStatus.READY);
+        Delivery delivery = new Delivery();
+        delivery.setAddress(member.getAddress());
+        delivery.setStatus(DeliveryStatus.READY);
 
         //주문상품 생성
         OrderItem orderItem = OrderItem.createOrderItem(item, item.getPrice(), count);
@@ -39,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
 
         //주문 저장
         orderRepository.save(order);
+
         return order.getId();
     }
 

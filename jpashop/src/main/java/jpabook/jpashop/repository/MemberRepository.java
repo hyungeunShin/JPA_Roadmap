@@ -15,7 +15,6 @@ public class MemberRepository {
     private final EntityManager em;
 
     public void save(Member member) {
-        log.info("em : {}", em.getClass());
         em.persist(member);
     }
 

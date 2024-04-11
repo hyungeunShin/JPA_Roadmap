@@ -2,7 +2,10 @@ package jpabook.jpashop.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jpabook.jpashop.domain.*;
+import jpabook.jpashop.domain.Address;
+import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.domain.Order;
+import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.exception.NotEnoughStockException;
@@ -81,13 +84,18 @@ class OrderServiceImplTest {
     }
 
     private Member createMember() {
-        Member member = new Member("회원1", new Address("서울", "강가", "123-123"));
+        Member member = new Member();
+        member.setName("회원1");
+        member.setAddress(new Address("서울", "강가", "123-123"));
         em.persist(member);
         return member;
     }
 
     private Book createBook() {
-        Book book = new Book("JPA 책", 10000, 10);
+        Book book = new Book();
+        book.setName("JPA 책");
+        book.setPrice(10000);
+        book.setQuantity(10);
         em.persist(book);
         return book;
     }

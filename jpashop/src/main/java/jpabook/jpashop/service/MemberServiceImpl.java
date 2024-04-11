@@ -32,6 +32,13 @@ public class MemberServiceImpl implements MemberService {
         return repository.findOne(memberId);
     }
 
+    @Override
+    @Transactional
+    public void update(Long id, String name) {
+        Member member = repository.findOne(id);
+        member.setName(name);
+    }
+
     private void validateDuplicateMember(Member member) {
         List<Member> list = repository.findByName(member.getName());
         if(!list.isEmpty()) {

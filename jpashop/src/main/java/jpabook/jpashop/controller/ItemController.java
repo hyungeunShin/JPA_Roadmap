@@ -50,23 +50,34 @@ public class ItemController {
             return "items/createItemForm";
         }
 
-        Item item = null;
-
         if("BOOK".equals(form.getItemType())) {
-            item = new Book(form.getName(), form.getPrice(), form.getQuantity(), form.getAuthor(), form.getIsbn());
+            Book book = new Book();
+            book.setName(form.getName());
+            book.setPrice(form.getPrice());
+            book.setQuantity(form.getQuantity());
+            book.setAuthor(form.getAuthor());
+            book.setIsbn(form.getIsbn());
+            service.saveItem(book);
         } else if("ALBUM".equals(form.getItemType())) {
-            item = new Album(form.getName(), form.getPrice(), form.getQuantity(), form.getArtist(), form.getEtc());
+            Album album = new Album();
+            album.setName(form.getName());
+            album.setPrice(form.getPrice());
+            album.setQuantity(form.getQuantity());
+            album.setArtist(form.getArtist());
+            album.setEtc(form.getEtc());
+            service.saveItem(album);
         } else if("MOVIE".equals(form.getItemType())) {
-            item = new Movie(form.getName(), form.getPrice(), form.getQuantity(), form.getDirector(), form.getActor());
+            Movie movie = new Movie();
+            movie.setName(form.getName());
+            movie.setPrice(form.getPrice());
+            movie.setQuantity(form.getQuantity());
+            movie.setDirector(form.getDirector());
+            movie.setActor(form.getActor());
+            service.saveItem(movie);
         }
 
-        if(item != null) {
-            service.saveItem(item);
-            ra.addFlashAttribute("message", "상품이 등록되었습니다.");
-            return "redirect:/items";
-        } else {
-            return "items/createItemForm";
-        }
+        ra.addFlashAttribute("message", "상품이 등록되었습니다.");
+        return "redirect:/items";
     }
 
     @GetMapping("/items")
@@ -105,22 +116,12 @@ public class ItemController {
     }
 
     @PostMapping("/items/{itemId}/edit")
-    public String updateItem(@PathVariable("itemId") Long itemId, @ModelAttribute("form") ItemEditForm form) {
-        Item item = null;
-
-        if("BOOK".equals(form.getItemType())) {
-            item = new Book(form.getId(), form.getName(), form.getPrice(), form.getQuantity(), form.getAuthor(), form.getIsbn());
-        } else if("ALBUM".equals(form.getItemType())) {
-            item = new Album(form.getId(), form.getName(), form.getPrice(), form.getQuantity(), form.getArtist(), form.getEtc());
-        } else if("MOVIE".equals(form.getItemType())) {
-            item = new Movie(form.getId(), form.getName(), form.getPrice(), form.getQuantity(), form.getDirector(), form.getActor());
-        }
-
-        if(item != null) {
-            service.saveItem(item);
-            return "redirect:/items";
-        } else {
+    public String updateItem(@PathVariable("itemId") Long itemId, @ModelAttribute("form") @Validated ItemEditForm form, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) {
             return "items/updateItemForm";
         }
+
+        service.updateItem(form);
+        return "redirect:/items";
     }
 }
