@@ -1,7 +1,6 @@
 package com.example.common.domain;
 
 import com.example.board.domain.Board;
-import com.example.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AttachFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "file_no")
+    @Column(name = "file_id")
     private Long id;
 
     private String originalFileName;
@@ -34,7 +33,7 @@ public class AttachFile {
     private int fileDownloadCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_no")
+    @JoinColumn(name = "board_id")
     private Board board;
 
     public AttachFile(MultipartFile file, String uploadFileName, String uploadFilePath, String fileExt) {

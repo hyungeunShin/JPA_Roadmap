@@ -2,7 +2,7 @@ package com.example.board.domain;
 
 import com.example.common.domain.AttachFile;
 import com.example.common.domain.TimeEntity;
-import com.example.member.domain.Member;
+import com.example.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,7 +18,7 @@ import java.util.List;
 public class Board extends TimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "board_no")
+    @Column(insertable = false, updatable = false)
     private Long id;
 
     private String boardTitle;
@@ -28,18 +28,18 @@ public class Board extends TimeEntity {
     private int boardHit;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_no")
-    private Member member;
+    @JoinColumn(name = "id")
+    private User user;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AttachFile> files = new ArrayList<>();
 
     @Builder
-    public Board(String boardTitle, String boardContent, Member member) {
+    public Board(String boardTitle, String boardContent, User user) {
         this.boardTitle = boardTitle;
         this.boardContent = boardContent;
         this.boardHit = 0;
-        this.member = member;
+        this.user = user;
     }
 
     public void increaseHit() {

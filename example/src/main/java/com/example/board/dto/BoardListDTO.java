@@ -28,7 +28,7 @@ public class BoardListDTO {
         this.boardTitle = board.getBoardTitle();
         this.boardContent = board.getBoardContent();
         this.boardHit = board.getBoardHit();
-        this.boardWriter = board.getMember().getMemberId();
+        this.boardWriter = board.getUser().getUsername();
         this.boardRegisterDate = board.getRegisterDate();
     }
 }

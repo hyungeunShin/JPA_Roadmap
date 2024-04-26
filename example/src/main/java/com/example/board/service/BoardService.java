@@ -1,7 +1,7 @@
 package com.example.board.service;
 
 import com.example.board.dto.*;
-import com.example.member.domain.Member;
+import com.example.user.domain.User;
 import com.example.util.PaginationInfo;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public interface BoardService {
 
     int getBoardTotalCount(PaginationInfo<BoardListDTO> paginationInfo);
 
-    Long saveBoard(RegisterBoardDTO dto, Member member) throws IOException;
+    Long saveBoard(RegisterBoardDTO dto, User user) throws IOException;
 
     BoardDetailDTO findBoardDetail(Long boardNo) throws NullPointerException;
 

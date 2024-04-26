@@ -1,4 +1,4 @@
-package com.example.member.dto;
+package com.example.user.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
@@ -8,10 +8,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class LoginDTO {
+public class FindPwDTO {
     @NotEmpty
-    private String memId;
+    private String username;
 
     @NotEmpty
-    private String memPw;
+    private String phone;
+
+    @NotEmpty
+    private String name;
 }

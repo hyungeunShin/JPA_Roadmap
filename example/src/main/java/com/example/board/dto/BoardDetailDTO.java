@@ -12,7 +12,7 @@ import java.util.List;
 public class BoardDetailDTO {
     private Long id;
 
-    private Long memberNo;
+    private Long userId;
 
     private String boardTitle;
 
@@ -26,14 +26,14 @@ public class BoardDetailDTO {
 
     private List<BoardFileDetailDTO> boardFileList;
 
-    public BoardDetailDTO(Board board, List<BoardFileDetailDTO> boardFileList) {
+    public BoardDetailDTO(Board board) {
         this.id = board.getId();
-        this.memberNo = board.getMember().getId();
+        this.userId = board.getUser().getId();
         this.boardTitle = board.getBoardTitle();
         this.boardContent = board.getBoardContent();
         this.boardHit = board.getBoardHit();
-        this.boardWriter = board.getMember().getMemberId();
+        this.boardWriter = board.getUser().getUsername();
         this.boardRegisterDate = board.getRegisterDate();
-        this.boardFileList = boardFileList;
+        this.boardFileList = board.getFiles().stream().map(BoardFileDetailDTO::new).toList();
     }
 }

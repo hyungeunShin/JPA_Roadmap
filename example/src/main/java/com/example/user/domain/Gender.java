@@ -1,4 +1,4 @@
-package com.example.member.domain;
+package com.example.user.domain;
 
 public enum Gender {
     MALE("남자"), FEMALE("여자");

@@ -4,7 +4,7 @@ import com.example.board.domain.Board;
 import com.example.board.dto.*;
 import com.example.board.repository.BoardRepository;
 import com.example.common.domain.AttachFile;
-import com.example.member.domain.Member;
+import com.example.user.domain.User;
 import com.example.util.FileStore;
 import com.example.util.PaginationInfo;
 import lombok.RequiredArgsConstructor;
@@ -26,21 +26,23 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public List<BoardListDTO> getBoardList(PaginationInfo<BoardListDTO> paginationInfo) {
-        return repository.boardList(paginationInfo).stream().map(BoardListDTO::new).toList();
+        //return repository.boardList(paginationInfo).stream().map(BoardListDTO::new).toList();
+        return null;
     }
 
     @Override
     public int getBoardTotalCount(PaginationInfo<BoardListDTO> paginationInfo) {
-        return repository.boardTotalCount(paginationInfo).intValue();
+        //return repository.boardTotalCount(paginationInfo).intValue();
+        return 0;
     }
 
     @Transactional
     @Override
-    public Long saveBoard(RegisterBoardDTO dto, Member member) throws IOException {
+    public Long saveBoard(RegisterBoardDTO dto, User user) throws IOException {
         Board board = Board.builder()
                            .boardTitle(dto.getBoardTitle())
                            .boardContent(dto.getBoardContent())
-                           .member(member)
+                           .user(user)
                            .build();
 
         saveAttachFile(dto.getBoardFile(), board);
@@ -52,9 +54,8 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardDetailDTO findBoardDetail(Long boardNo) throws NullPointerException {
-        Board board = repository.findBoardDTOById(boardNo).orElseThrow(NullPointerException::new);
-        List<BoardFileDetailDTO> fileDetailList = board.getFiles().stream().map(BoardFileDetailDTO::new).toList();
-        return new BoardDetailDTO(board, fileDetailList);
+        Board board = repository.findBoardById(boardNo).orElseThrow(NullPointerException::new);
+        return new BoardDetailDTO(board);
     }
 
     @Transactional

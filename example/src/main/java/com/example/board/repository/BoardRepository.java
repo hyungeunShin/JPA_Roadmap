@@ -2,9 +2,9 @@ package com.example.board.repository;
 
 import com.example.board.domain.Board;
 import com.example.board.domain.QBoard;
-import com.example.board.dto.*;
+import com.example.board.dto.BoardListDTO;
 import com.example.common.domain.AttachFile;
-import com.example.member.domain.QMember;
+import com.example.user.domain.QUser;
 import com.example.util.PaginationInfo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -29,7 +29,7 @@ public class BoardRepository {
         String searchWord = paginationInfo.getSearchWord();
 
         QBoard board = QBoard.board;
-        QMember member = QMember.member;
+        QUser user = QUser.user;
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -38,12 +38,12 @@ public class BoardRepository {
         } else if("content".equals(searchType)) {
             builder.and(board.boardContent.like("%" + searchWord + "%"));
         } else if("writer".equals(searchType)) {
-            builder.and(member.memberId.like("%" + searchWord + "%"));
+            builder.and(user.username.like("%" + searchWord + "%"));
         }
 
         return query.select(board)
                     .from(board)
-                    .join(board.member, member)
+                    .join(board.user, user)
                     .fetchJoin()
                     .where(builder)
                     .orderBy(board.id.desc())
@@ -57,7 +57,7 @@ public class BoardRepository {
         String searchWord = paginationInfo.getSearchWord();
 
         QBoard board = QBoard.board;
-        QMember member = QMember.member;
+        QUser user = QUser.user;
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -66,12 +66,12 @@ public class BoardRepository {
         } else if("content".equals(searchType)) {
             builder.and(board.boardContent.like("%" + searchWord + "%"));
         } else if("writer".equals(searchType)) {
-            builder.and(member.memberId.like("%" + searchWord + "%"));
+            builder.and(user.username.like("%" + searchWord + "%"));
         }
 
         return query.select(board.count())
                     .from(board)
-                    .join(board.member, member)
+                    .join(board.user, user)
                     .where(builder)
                     .fetchOne();
     }
@@ -81,15 +81,8 @@ public class BoardRepository {
         return board.getId();
     }
 
-    public Optional<Board> findBoardDTOById(Long boardNo) {
-        return em.createQuery("select b from Board b join fetch b.member left join fetch b.files where b.id = :boardNo", Board.class)
-                 .setParameter("boardNo", boardNo)
-                 .getResultStream()
-                 .findFirst();
-    }
-
     public Optional<Board> findBoardById(Long boardNo) {
-        return em.createQuery("select b from Board b where b.id = :boardNo", Board.class)
+        return em.createQuery("select b from Board b join fetch b.user left join fetch b.files where b.id = :boardNo", Board.class)
                  .setParameter("boardNo", boardNo)
                  .getResultStream()
                  .findFirst();

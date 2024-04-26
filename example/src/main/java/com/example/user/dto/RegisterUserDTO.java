@@ -1,6 +1,6 @@
-package com.example.member.dto;
+package com.example.user.dto;
 
-import com.example.member.domain.Gender;
+import com.example.user.domain.Gender;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -11,34 +11,34 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 @ToString
-public class RegisterMemberDTO {
+public class RegisterUserDTO {
     @NotBlank
-    private String memId;
+    private String username;
 
     @NotBlank
-    private String memPw;
+    private String password;
 
     @NotBlank
-    private String memName;
+    private String name;
 
     @NotNull
-    private Gender memGender;
+    private Gender gender;
 
     @NotBlank
-    private String memEmail;
+    private String email;
 
     @NotBlank
-    private String memPhone;
+    private String phone;
 
     @NotBlank
-    private String memPostCode;
+    private String postCode;
 
     @NotBlank
-    private String memAddress1;
+    private String address1;
 
-    private String memAddress2;
+    private String address2;
 
-    private Boolean memAgree;
+    private Boolean agree;
 
     private MultipartFile profile;
 }

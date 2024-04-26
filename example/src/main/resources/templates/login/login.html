@@ -3,32 +3,30 @@
 
 <div class="login-box">
 	<div class="login-logo">
-		<a href="#"><b>EXAMPLE</b>BOARD</a>
+		<a href="#"><b>EXAMPLE</b> BOARD</a>
 	</div>
 	
 	<div class="card">
 		<div class="card-body login-card-body">
 			<p class="login-box-msg">로그인을 진행해주세요</p>
 
-			<form action="/login" th:action method="post" id="signForm" th:object="${member}">
+			<form action="/login" th:action method="post" id="signForm">
 				<div class="input-group mb-3">
-					<input type="text" class="form-control" th:field="*{memId}" placeholder="아이디를 입력해주세요">
+					<input type="text" class="form-control" id="username" name="username" placeholder="아이디를 입력해주세요">
 					<div class="input-group-append">
 						<div class="input-group-text">
 							<span class="fas fa-user"></span>
 						</div>
 					</div>
-					<span class="error invalid-feedback" style="display: block;" th:errors="*{memId}"></span>
 				</div>
 				
 				<div class="input-group mb-3">
-					<input type="password" class="form-control" th:field="*{memPw}" placeholder="비밀번호를 입력해주세요">
+					<input type="password" class="form-control" id="password" name="password" placeholder="비밀번호를 입력해주세요">
 					<div class="input-group-append">
 						<div class="input-group-text">
 							<span class="fas fa-lock"></span>
 						</div>
 					</div>
-					<span class="error invalid-feedback" style="display: block;" th:errors="*{memPw}"></span>
 				</div>
 				
 				<div class="row">
@@ -43,7 +41,10 @@
 			</form>
 			
 			<p class="mb-1">
-				<a href="/forget" th:href="@{|/forget|}">아이디 &amp; 비밀번호 찾기</a>
+				<a href="/idForget" th:href="@{|/idForget|}">아이디 찾기</a>
+			</p>
+			<p class="mb-1">
+				<a href="/pwForget" th:href="@{|/pwForget|}">비밀번호 찾기</a>
 			</p>
 			<p class="mb-0">
 				<a href="/register" th:href="@{|/register|}" class="text-center">회원가입</a>

@@ -29,6 +29,7 @@ dependencies {
 	implementation 'commons-io:commons-io:2.16.0'
 	implementation 'com.google.code.gson:gson:2.10.1'
 	implementation 'org.apache.commons:commons-lang3:3.14.0'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"

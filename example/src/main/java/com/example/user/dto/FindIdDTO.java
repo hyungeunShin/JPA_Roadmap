@@ -1,4 +1,4 @@
-package com.example.member.dto;
+package com.example.user.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class FindIdDTO {
-    private String memName;
+    private String name;
 
-    private String memPhone;
+    private String phone;
 }
