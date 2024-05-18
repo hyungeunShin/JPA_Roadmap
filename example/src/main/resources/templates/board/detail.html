@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{template/mainTemplate :: mainLayout(~{::section[@Class='content']}, ~{::script})}">
+	<section class="content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card card-primary">
+						<div class="card-header">
+							<h3 class="card-title">[[${board.boardTitle}]]</h3>
+							<div class="card-tools">[[${board.boardWriter}]] [[${#temporals.format(board.boardRegisterDate, 'yyyy-MM-dd HH:mm')}]] [[${board.boardHit}]]</div>
+						</div>
+
+						<form id="quickForm" novalidate="novalidate">
+							<div class="card-body">[(${board.boardContent})]</div>
+
+							<!--파일-->
+							<div class="card-footer bg-white">
+								<ul	class="mailbox-attachments d-flex align-items-stretch clearfix">
+									<th:block th:if="${board.boardFileList != null and not #lists.isEmpty(board.boardFileList)}">
+										<li th:each="file : ${board.boardFileList}">
+											<span class="mailbox-attachment-icon">
+												<i class="far fa-file-pdf"></i>
+											</span>
+											<div class="mailbox-attachment-info">
+												<a href="#" class="mailbox-attachment-name">
+													<i class="fas fa-paperclip"></i> [[${file.originalFileName}]]
+												</a>
+												<span class="mailbox-attachment-size clearfix mt-1">
+													<span>[[${file.fileFancySize}]]</span>
+
+													<a href="/board/attach/download?id=0" th:href="@{/attach/download(id = ${file.id})}">
+														<span class="btn btn-default btn-sm float-right">
+															<i class="fas fa-download"></i>
+														</span>
+													</a>
+												</span>
+											</div>
+										</li>
+									</th:block>
+								</ul>
+							</div>
+						</form>
+						<div class="card-footer">
+							<button type="button" id="listBtn" th:onclick="|location.href='@{/board/list}'|" class="btn btn-primary">목록</button>
+							<th:block th:if="${#strings.equals(board.userId, #authentication.principal.id)}">
+								<button type="button" id="modifyBtn" th:onclick="|location.href='@{/board/edit/{boardId}(boardId = ${board.id})}'|" class="btn btn-info">수정</button>
+								<button type="button" id="delBtn" class="btn btn-danger">삭제</button>
+							</th:block>
+						</div>
+
+					</div>
+				</div>
+				<div class="col-md-6"></div>
+			</div>
+		</div>
+	</section>
+	<script th:inline="javascript">
+	(function(W, D, $) {
+		'use strict';
+		W.$Detail = W.$Detail || {};
+
+		$(document).ready(function() {
+			$Detail.ui.pageLoad();
+		});
+
+		$Detail.ui = {
+			pageLoad: function() {
+				$("#delBtn").on("click", function() {
+					if(confirm("정말 삭제하시겠습니까?")) {
+						let boardId = [[${board.id}]];
+						location.href="/board/delete/" + boardId;
+					}
+				});
+			}
+		}
+	}(window, document, jQuery))
+	</script>
+</html>

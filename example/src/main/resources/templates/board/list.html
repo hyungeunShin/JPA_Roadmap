@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{template/mainTemplate :: mainLayout(~{::section[@Class='content']}, ~{::script})}">
+	<section class="content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="card-tools">
+								<!-- 검색 -->
+								<form class="input-group input-group-sm" style="width: 440px;" method="get" id="searchForm" action="/board/list" th:action th:object="${paginationInfo}">
+									<input type="hidden" name="page" id="page">
+
+									<select class="form-control" th:field="*{searchType}">
+										<option th:each="type : ${searchTypes}" th:value="${type.key}" th:text="${type.value}">제목</option>
+									</select>
+
+									<input type="text" th:field="*{searchWord}" class="form-control float-right" placeholder="Search">
+
+									<div class="input-group-append">
+										<button type="submit" class="btn btn-default">
+											<i class="fas fa-search"></i>검색
+										</button>
+									</div>
+								</form>
+								<!-- 검색 -->
+							</div>
+							<h3 class="card-title">게시판 목록</h3>
+						</div>
+						<div class="card-body">
+							<table class="table table-bordered">
+								<thead>
+									<tr>
+										<th style="width: 6%">#</th>
+										<th>제목</th>
+										<th style="width: 12%">작성자</th>
+										<th style="width: 12%">작성일</th>
+										<th style="width: 10%">조회수</th>
+									</tr>
+								</thead>
+								<tbody>
+									<th:block th:if="${#lists.size(paginationInfo.dataList) == 0}">
+										<td colspan="5">조회하신 게시글이 존재하지 않습니다.</td>
+									</th:block>
+									<th:block th:if="${#lists.size(paginationInfo.dataList) != 0}">
+											<tr th:each="board : ${paginationInfo.dataList}">
+												<td th:text="${board.id}">번호</td>
+												<td><a th:href="@{/board/detail/{boardNo}(boardNo = ${board.id})}" th:text="${board.boardTitle}">제목</a></td>
+												<td th:text="${board.boardWriter}">작성자</td>
+												<td th:text="${#temporals.format(board.boardRegisterDate, 'yyyy-MM-dd HH:mm')}">등록일자</td>
+												<td th:text="${board.boardHit}">조회수</td>
+											</tr>
+									</th:block>
+								</tbody>
+							</table>
+						</div>
+						<div class="card-body">
+							<button type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/register}'|" id="newBtn">등록</button>
+						</div>
+						<div class="card-footer clearfix" id="pagingArea" th:utext="${paginationInfo.pagingHTML}">
+							<!--페이징-->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<script type="text/javascript">
+	(function(W, D, $) {
+		'use strict';
+		W.$List = W.$List || {};
+
+		$(document).ready(function() {
+			$List.ui.pageLoad();
+		});
+
+		$List.ui = {
+			pageLoad: function() {
+				let form = $('#searchForm');
+				let area = $('#pagingArea');
+
+				area.on("click", "a", function(event) {
+					event.preventDefault();
+					let pageNo = $(event.target).data('page');
+					form.find("#page").val(pageNo);
+					form.submit();
+				});
+			}
+		}
+	}(window, document, jQuery))
+	</script>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{template/mainTemplate :: mainLayout(~{::section[@Class='content']}, ~{::script})}">
+	<section class="content">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card card-primary">
+					<form action="/board/edit" th:action method="post" id="boardForm" enctype="multipart/form-data" th:object="${board}">
+						<input type="hidden" th:field="*{id}">
+
+						<div class="card-header">
+							<h3 class="card-title">게시판 수정</h3>
+							<div class="card-tools"></div>
+						</div>
+
+						<div class="card-body">
+							<div class="form-group">
+								<label for="boardTitle">제목을 입력해주세요</label>
+								<input type="text" th:field="*{boardTitle}" class="form-control" placeholder="제목을 입력해주세요">
+								<span class="error invalid-feedback" style="display: block;" th:errors="*{boardTitle}"></span>
+							</div>
+
+							<div class="form-group">
+								<label for="boardContent">내용을 입력해주세요</label>
+								<textarea th:field="*{boardContent}" class="form-control" rows="14"></textarea>
+								<span class="error invalid-feedback" style="display: block;" th:errors="*{boardContent}"></span>
+							</div>
+
+							<div class="form-group">
+								<div class="custom-file">
+									<label for="boardFile">파일 선택</label>
+									<input type="file" class="custom-file-input" id="boardFile" name="boardFile" multiple="multiple">
+									<label class="custom-file-label" for="boardFile">파일을 선택해주세요</label>
+								</div>
+							</div>
+
+							<div class="card-footer bg-white">
+								<ul class="mailbox-attachments d-flex align-items-stretch clearfix">
+									<th:block th:if="${board.boardFileList != null and not #lists.isEmpty(board.boardFileList)}">
+										<li th:each="file : ${board.boardFileList}">
+											<span class="mailbox-attachment-icon">
+												<i class="far fa-file-pdf"></i>
+											</span>
+
+											<div class="mailbox-attachment-info">
+												<a href="#" class="mailbox-attachment-name">
+													<i class="fas fa-paperclip"></i> [[${file.originalFileName}]]
+												</a>
+												<span class="mailbox-attachment-size clearfix mt-1">
+													<span>[[${file.fileFancySize}]]</span>
+													<span class="btn btn-default btn-sm float-right attachmentFileDel" th:attr="data-fileno=${file.getId()}">
+														<i class="fas fa-times"></i>
+													</span>
+												</span>
+											</div>
+										</li>
+									</th:block>
+								</ul>
+							</div>
+						</div>
+
+						<div class="card-footer bg-white">
+							<div class="row">
+								<div class="col-12">
+									<input type="submit" id="updateBtn" value="수정" class="btn btn-primary">
+									<input type="button" id="cancelBtn" value="취소" th:onclick="|location.href='@{/board/detail/{boardNo}(boardNo = ${board.id})}'|" class="btn btn-danger">
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+	<script type="text/javascript">
+	(function(W, D, $) {
+		'use strict';
+		W.$Edit = W.$Edit || {};
+
+		$(document).ready(function() {
+			$Edit.ui.pageLoad();
+		});
+
+		$Edit.ui = {
+			pageLoad: function() {
+				CKEDITOR.replace("boardContent", {
+					footnotesPrefix: "a",
+					filebrowserUploadUrl: '/attach/upload'
+				});
+
+				$(".attachmentFileDel").on("click", function(event) {
+					let no = $(event.target).data('fileno');
+					console.log(no);
+					if(no) {
+						let str = `<input type='hidden' name='delFileNo' value='${no}'>`;
+						$("#boardForm").append(str);
+						$(event.target).parents("li:first").hide();
+					}
+				});
+			}
+		}
+	}(window, document, jQuery))
+	</script>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html th:replace="~{template/loginTemplate :: loginLayout(~{::div[@Class='login-box']}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
+
+<div class="login-box">
+	<div class="login-logo">
+		<a href="#"><b>로그인</b></a>
+	</div>
+	
+	<div class="card">
+		<div class="card-body login-card-body">
+			<p class="login-box-msg">로그인을 진행해주세요</p>
+
+			<form action="/login" th:action method="post" id="signForm">
+				<div class="input-group mb-3">
+					<input type="text" class="form-control" id="username" name="username" placeholder="아이디를 입력해주세요">
+					<div class="input-group-append">
+						<div class="input-group-text">
+							<span class="fas fa-user"></span>
+						</div>
+					</div>
+				</div>
+				
+				<div class="input-group mb-3">
+					<input type="password" class="form-control" id="password" name="password" placeholder="비밀번호를 입력해주세요">
+					<div class="input-group-append">
+						<div class="input-group-text">
+							<span class="fas fa-lock"></span>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-8">
+						<div class="icheck-primary">
+						</div>
+					</div>
+					<div class="col-4">
+						<button type="submit" class="btn btn-primary btn-block" id="signinBtn">로그인</button>
+					</div>
+				</div>
+			</form>
+			
+			<p class="mb-1">
+				<a href="/idForget" th:href="@{|/idForget|}">아이디 찾기</a> &amp; <a href="/pwForget" th:href="@{|/pwForget|}">비밀번호 찾기</a>
+			</p>
+			<p class="mb-0">
+				<a href="/register" th:href="@{|/register|}" class="text-center">회원가입</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript"></script>
