@@ -151,7 +151,7 @@
 			$("#idCheckBtn").on("click", function() {
 				let id = $("#username").val();
 	
-				if(id == null || id == "") {
+				if(id == null || id === "") {
 					alert("아이디를 입력해주세요");
 					return false;
 				}
@@ -160,10 +160,10 @@
 					method: "post",
 					body: new URLSearchParams({"username" : id})
 				})
-				.then(response => response.text())
+				.then(response => response.json())
 				.then(function(result) {
 					console.log(result);
-					if(result == "\"NOTEXIST\"") {
+					if(result === "NOTEXIST") {
 						alert("사용 가능한 아이디입니다");
 						$("#memId").css("border-color", "green");
 						idCheckFlag = true;
