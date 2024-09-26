@@ -78,37 +78,37 @@ public class MemberApiController {
 
     @Data
     @AllArgsConstructor
-    static class CreateMemberResponse {
+    public static class CreateMemberResponse {
         private Long id;
     }
 
     @Data
-    static class CreateMemberRequest {
+    public static class CreateMemberRequest {
         @NotEmpty
         private String name;
     }
 
     @Data
-    static class UpdateMemberRequest {
+    public static class UpdateMemberRequest {
         private String name;
     }
 
     @Data
     @AllArgsConstructor
-    static class UpdateMemberResponse {
+    public static class UpdateMemberResponse {
         private Long id;
         private String name;
     }
 
     @Data
     @AllArgsConstructor
-    static class Result<T> {
+    public static class Result<T> {
         private T data;
     }
 
     @Data
     @AllArgsConstructor
-    static class MemberDto {
+    public static class MemberDto {
         private String name;
     }
 }

@@ -1,24 +1,24 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}"></head>
+<head th:replace="fragments/header :: header"></head>
 <body>
     <div class="container">
-        <div th:replace="~{fragments/bodyHeader :: bodyHeader}"></div>
+        <div th:replace="fragments/bodyHeader :: bodyHeader"></div>
 
         <form role="form" action="/order" method="post">
             <div class="form-group">
-                <label for="memberId">주문회원</label>
-                <select id="memberId" name="memberId" class="form-control">
+                <label for="member">주문회원</label>
+                <select name="memberId" id="member" class="form-control">
                     <option value="">회원선택</option>
-                    <option th:each="member : ${members}" th:value="${member.id}" th:text="${member.name}" th:selected="${member.id} == ${memberId}"></option>
+                    <option th:each="member : ${members}" th:value="${member.id}" th:text="${member.name}" />
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="itemId">상품명</label>
-                <select id="itemId" name="itemId" class="form-control">
+                <label for="item">상품명</label>
+                <select name="itemId" id="item" class="form-control">
                     <option value="">상품선택</option>
-                    <option th:each="item : ${items}" th:value="${item.id}" th:text="${item.name}" th:selected="${item.id} == ${itemId}"></option>
+                    <option th:each="item : ${items}" th:value="${item.id}" th:text="${item.name}" />
                 </select>
             </div>
 
@@ -27,14 +27,14 @@
                 <input type="number" name="count" class="form-control" id="count" placeholder="주문 수량을 입력하세요">
             </div>
 
-            <br/>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
 
         <br/>
 
-        <div th:replace="~{fragments/footer :: footer}"></div>
+        <div th:replace="fragments/footer :: footer"></div>
     </div>
+
     <script th:inline="javascript">
         let message = [[${message}]];
         if(message) {

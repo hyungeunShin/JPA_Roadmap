@@ -3,8 +3,7 @@ package jpabook.jpashop.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import jpabook.jpashop.api.dto.OrderSimpleQueryDto;
-import jpabook.jpashop.controller.dto.PaginationInfo;
+import jpabook.jpashop.controller.dto.OrderSearch;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.domain.QMember;
@@ -37,17 +36,35 @@ public class OrderRepository {
     }
 
     public List<Order> findAllWithMemberDelivery() {
-        return em.createQuery("select o from Order o join fetch o.member m join fetch o.delivery d", Order.class).getResultList();
+        return em.createQuery("select o from Order o join fetch o.member join fetch o.delivery", Order.class).getResultList();
     }
 
-    public List<OrderSimpleQueryDto> findOrderDto() {
-        return em.createQuery("select new jpabook.jpashop.api.dto.OrderSimpleQueryDto(o.id, m.name, o.orderDate, o.status, d.address) from Order o join o.member m join o.delivery d"
-                        , OrderSimpleQueryDto.class).getResultList();
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery("select o from Order o join fetch o.member join fetch o.delivery", Order.class)
+                 .setFirstResult(offset)
+                 .setMaxResults(limit)
+                 .getResultList();
     }
 
-    public List<Order> findAllByQuerydsl(PaginationInfo<Order> paginationInfo) {
-        OrderStatus orderStatus = paginationInfo.getOrderStatus();
-        String memberName = paginationInfo.getMemberName();
+    public List<Order> findAllWithItem() {
+        /*
+        하이버네이트 6부터 fetch join 이 하위 컬렉션을 가져올 때 동일한 상위 엔터티 참조를 필터링하기 위해 distinct 를 더 이상 사용할 필요가 없다.
+        https://github.com/hibernate/hibernate-orm/blob/6.0/migration-guide.adoc#distinct
+        */
+        return em.createQuery(
+                "select o from Order o" +
+                " join fetch o.member m" +
+                " join fetch o.delivery d" +
+                " join fetch o.orderItems oi" +
+                " join fetch oi.item i", Order.class)
+                /*.setFirstResult(0)
+                .setMaxResults(100)*/
+                .getResultList();
+    }
+
+    public List<Order> findAllByQuerydsl(OrderSearch orderSearch) {
+        OrderStatus orderStatus = orderSearch.getOrderStatus();
+        String memberName = orderSearch.getMemberName();
 
         QOrder order = QOrder.order;
         QMember member = QMember.member;
@@ -67,32 +84,6 @@ public class OrderRepository {
                     .join(order.member, member)
                     .where(builder)
                     .orderBy(order.id.desc())
-                    .limit(paginationInfo.getScreenSize())
-                    .offset(paginationInfo.getStartRow() - 1)
                     .fetch();
-    }
-
-    public Long ordersTotalCount(PaginationInfo<Order> paginationInfo) {
-        OrderStatus orderStatus = paginationInfo.getOrderStatus();
-        String memberName = paginationInfo.getMemberName();
-
-        QOrder order = QOrder.order;
-        QMember member = QMember.member;
-
-        BooleanBuilder builder = new BooleanBuilder();
-
-        if(orderStatus != null) {
-            builder.and(order.status.eq(orderStatus));
-        }
-
-        if(StringUtils.hasText(memberName)) {
-            builder.and(member.name.like("%" + memberName + "%"));
-        }
-
-        return query.select(order.count())
-                    .from(order)
-                    .join(order.member, member)
-                    .where(builder)
-                    .fetchOne();
     }
 }

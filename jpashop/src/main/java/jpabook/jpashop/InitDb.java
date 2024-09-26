@@ -2,16 +2,11 @@ package jpabook.jpashop;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
-import jpabook.jpashop.domain.Delivery;
-import jpabook.jpashop.domain.Member;
-import jpabook.jpashop.domain.Order;
-import jpabook.jpashop.domain.OrderItem;
-import jpabook.jpashop.exception.NotEnoughStockException;
+import jpabook.jpashop.domain.*;
+import jpabook.jpashop.domain.item.Book;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import jpabook.jpashop.domain.item.Book;
-import jpabook.jpashop.domain.Address;
 
 @Component
 @RequiredArgsConstructor
@@ -19,7 +14,7 @@ public class InitDb {
     private final InitService initService;
 
     @PostConstruct
-    public void init() throws NotEnoughStockException {
+    public void init() {
         initService.dbInit1();
         initService.dbInit2();
     }
@@ -30,7 +25,7 @@ public class InitDb {
     static class InitService {
         private final EntityManager em;
 
-        public void dbInit1() throws NotEnoughStockException {
+        public void dbInit1() {
             Member member = createMember("userA", "서울", "1", "1111");
             em.persist(member);
 
@@ -47,8 +42,8 @@ public class InitDb {
             em.persist(order);
         }
 
-        public void dbInit2() throws NotEnoughStockException {
-            Member member = createMember("userB", "진주", "2", "2222");
+        public void dbInit2() {
+            Member member = createMember("userB", "인천", "2", "2222");
             em.persist(member);
 
             Book book1 = createBook("SPRING1 BOOK", 20000, 200);

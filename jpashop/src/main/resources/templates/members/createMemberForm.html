@@ -35,5 +35,11 @@
 
         <div th:replace="~{fragments/footer :: footer}"></div>
     </div>
+    <script th:inline="javascript">
+        let message = [[${message}]];
+        if(message) {
+            alert(message);
+        }
+    </script>
 </body>
 </html>

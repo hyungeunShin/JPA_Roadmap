@@ -27,7 +27,7 @@ public class MemberController {
     }
 
     @PostMapping("/members/new")
-    public String join(@Validated @ModelAttribute("memberForm") MemberForm form, BindingResult bindingResult) {
+    public String join(@Validated @ModelAttribute("memberForm") MemberForm form, BindingResult bindingResult, Model model) {
         if(bindingResult.hasErrors()) {
             return "members/createMemberForm";
         }
@@ -40,6 +40,7 @@ public class MemberController {
         try {
             service.join(member);
         } catch(IllegalStateException e) {
+            model.addAttribute("message", "이미 존재하는 이름입니다.");
             return "members/createMemberForm";
         }
 

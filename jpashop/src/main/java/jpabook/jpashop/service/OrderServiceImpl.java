@@ -1,11 +1,10 @@
 package jpabook.jpashop.service;
 
-import jpabook.jpashop.controller.dto.PaginationInfo;
+import jpabook.jpashop.controller.dto.OrderSearch;
 import jpabook.jpashop.domain.*;
 import jpabook.jpashop.domain.item.Item;
-import jpabook.jpashop.exception.NotEnoughStockException;
 import jpabook.jpashop.repository.ItemRepository;
-import jpabook.jpashop.repository.MemberRepository;
+import jpabook.jpashop.repository.MemberRepositoryOld;
 import jpabook.jpashop.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,13 +16,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class OrderServiceImpl implements OrderService {
-    private final MemberRepository memberRepository;
+    private final MemberRepositoryOld memberRepository;
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
 
     @Transactional
     @Override
-    public Long order(Long memberId, Long itemId, int count) throws NotEnoughStockException {
+    public Long order(Long memberId, Long itemId, int count) {
         //엔티티 조회
         Member member = memberRepository.findOne(memberId);
         Item item = itemRepository.findOne(itemId);
@@ -53,12 +52,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findOrders(PaginationInfo<Order> paginationInfo) {
-        return orderRepository.findAllByQuerydsl(paginationInfo);
-    }
-
-    @Override
-    public Long orderTotalCount(PaginationInfo<Order> paginationInfo) {
-        return orderRepository.ordersTotalCount(paginationInfo);
+    public List<Order> findOrders(OrderSearch orderSearch) {
+        return orderRepository.findAllByQuerydsl(orderSearch);
     }
 }

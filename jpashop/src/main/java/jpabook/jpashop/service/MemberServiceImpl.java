@@ -12,6 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberServiceImpl implements MemberService {
+    //private final MemberRepositoryOld repository;
     private final MemberRepository repository;
 
     @Transactional  //readOnly = false 로
@@ -29,13 +30,13 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member findOne(Long memberId) {
-        return repository.findOne(memberId);
+        //return repository.findOne(memberId);
+        return repository.findById(memberId).orElseThrow(NullPointerException::new);
     }
 
-    @Override
     @Transactional
     public void update(Long id, String name) {
-        Member member = repository.findOne(id);
+        Member member = repository.findById(id).orElseThrow(NullPointerException::new);
         member.setName(name);
     }
 

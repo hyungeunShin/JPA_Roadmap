@@ -1,11 +1,10 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}"></head>
+<head th:replace="fragments/header :: header"></head>
 <body>
     <div class="container">
-        <div th:replace="~{fragments/bodyHeader :: bodyHeader}"></div>
-
-        <form th:action th:object="${form}" method="post">
+        <div th:replace="fragments/bodyHeader :: bodyHeader"></div>
+        <form th:action="@{/items/new}" th:object="${form}" method="post">
             <div class="form-group">
                 <label th:for="name">상품명</label>
                 <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요">
@@ -17,78 +16,26 @@
             </div>
 
             <div class="form-group">
-                <label th:for="quantity">수량</label>
+                <label th:for="stockQuantity">수량</label>
                 <input type="number" th:field="*{quantity}" class="form-control" placeholder="수량을 입력하세요">
             </div>
 
-            <label for="itemType">상품 종류</label>
-            <select id="itemType" name="itemType" class="form-control">
-                <option value="">상품 종류를 선택하세요</option>
-                <option th:each="type : ${itemType}" th:value="${type.value}" th:text="${type.key}"></option>
-            </select>
-            <p class="fieldError" th:errors="*{itemType}">Incorrect date</p>
-
-            <div class="itemType" id="bookType" style="display: none;">
-                <div class="form-group">
-                    <label th:for="author">저자</label>
-                    <input type="text" th:field="*{author}" class="form-control" placeholder="저자를 입력하세요">
-                </div>
-
-                <div class="form-group">
-                    <label th:for="isbn">ISBN</label>
-                    <input type="text" th:field="*{isbn}" class="form-control" placeholder="ISBN을 입력하세요">
-                </div>
+            <div class="form-group">
+                <label th:for="author">저자</label>
+                <input type="text" th:field="*{author}" class="form-control" placeholder="저자를 입력하세요">
             </div>
 
-            <div class="itemType" id="albumType" style="display: none;">
-                <div class="form-group">
-                    <label th:for="artist">아티스트</label>
-                    <input type="text" th:field="*{artist}" class="form-control" placeholder="아티스트를 입력하세요">
-                </div>
-
-                <div class="form-group">
-                    <label th:for="etc">etc</label>
-                    <input type="text" th:field="*{etc}" class="form-control" placeholder="기타정보를 입력하세요">
-                </div>
+            <div class="form-group">
+                <label th:for="isbn">ISBN</label>
+                <input type="text" th:field="*{isbn}" class="form-control" placeholder="ISBN을 입력하세요">
             </div>
 
-            <div class="itemType" id="movieType" style="display: none;">
-                <div class="form-group">
-                    <label th:for="director">감독</label>
-                    <input type="text" th:field="*{director}" class="form-control" placeholder="감독을 입력하세요">
-                </div>
-
-                <div class="form-group">
-                    <label th:for="actor">배우</label>
-                    <input type="text" th:field="*{actor}" class="form-control" placeholder="배우를 입력하세요">
-                </div>
-            </div>
-
-            <br/>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
 
         <br/>
 
-        <div th:replace="~{fragments/footer :: footer}"></div>
+        <div th:replace="fragments/footer :: footer"></div>
     </div>
-    <script>
-        let itemType = document.querySelector("#itemType");
-        itemType.addEventListener("change", function() {
-            let elements = document.querySelectorAll(".itemType");
-            elements.forEach(element => {
-                element.style.display = "none";
-            });
-
-            let val = itemType.value;
-            if(val === "BOOK") {
-                document.querySelector("#bookType").style.display = "block";
-            } else if(val === "ALBUM") {
-                document.querySelector("#albumType").style.display = "block";
-            } else if(val === "MOVIE") {
-                document.querySelector("#movieType").style.display = "block";
-            }
-        });
-    </script>
 </body>
 </html>
