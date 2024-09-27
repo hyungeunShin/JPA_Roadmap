@@ -7,3 +7,5 @@
 ### 2. 스프링부트와 JPA 활용1 - 웹 애플리케이션 개발([jpashop](https://github.com/hyungeunShin/JPA_Roadmap/tree/master/jpashop))
 
 ### 3. 스프링부트와 JPA 활용2 - API 개발과 성능 최적화([jpashop](https://github.com/hyungeunShin/JPA_Roadmap/tree/master/jpashop))
+
+### 4. 스프링 데이터 JPA([data-jpa](https://github.com/hyungeunShin/JPA_Roadmap/tree/master/data-jpa))
