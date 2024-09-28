@@ -7,16 +7,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
-import study.datajpa.projection.NestedClosedProjection;
-import study.datajpa.projection.UsernameAndAgeOnly;
-import study.datajpa.projection.UsernameOnly;
-import study.datajpa.projection.UsernameOnlyDTO;
+import study.datajpa.projection.*;
 import study.datajpa.spec.MemberSpec;
 
 import java.util.List;
@@ -170,5 +166,11 @@ class JpaRepositoryRestFnTest {
         */
         List<Member> list1 = memberRepository.findByNativeQuery("m1");
         log.info("{}", list1);
+
+        Page<MemberProjection> page = memberRepository.findByNativeProjection(PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "age")));
+        for(MemberProjection memberProjection : page.getContent()) {
+            log.info("{}", memberProjection.getUsername());
+            log.info("{}", memberProjection.getTeamName());
+        }
     }
 }

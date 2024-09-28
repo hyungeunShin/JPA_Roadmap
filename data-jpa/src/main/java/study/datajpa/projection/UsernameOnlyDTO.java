@@ -1,15 +1,17 @@
 package study.datajpa.projection;
 
-import lombok.Getter;
-import lombok.ToString;
-
-@Getter
-@ToString
-public class UsernameOnlyDTO {
-    private final String username;
-
+public record UsernameOnlyDTO(String username) {
     //생성자의 파라미터 이름으로 매칭
-    public UsernameOnlyDTO(String username) {
-        this.username = username;
+
+    @Override
+    public String username() {
+        return username;
+    }
+
+    @Override
+    public String toString() {
+        return "UsernameOnlyDTO{" +
+                "username='" + username + '\'' +
+                '}';
     }
 }
