@@ -16,8 +16,8 @@ public class AttachFileRepository {
 
     public Optional<AttachFile> findById(Long id) {
         return em.createQuery("select f from AttachFile f where f.id = :id", AttachFile.class)
-                .setParameter("id", id)
-                .getResultStream()
-                .findFirst();
+                 .setParameter("id", id)
+                 .getResultStream()
+                 .findFirst();
     }
 }
