@@ -9,3 +9,5 @@
 ### 3. 스프링부트와 JPA 활용2 - API 개발과 성능 최적화([jpashop](https://github.com/hyungeunShin/JPA_Roadmap/tree/master/jpashop))
 
 ### 4. 스프링 데이터 JPA([data-jpa](https://github.com/hyungeunShin/JPA_Roadmap/tree/master/data-jpa))
+
+### 5. QueryDSL([querydsl](https://github.com/hyungeunShin/JPA_Roadmap/tree/master/querydsl))
