@@ -41,7 +41,7 @@ class QuerydslBasicTest {
     JPAQueryFactory queryFactory;
 
     @BeforeEach
-    public void before() {
+    void before() {
         /*
         JPAQueryFactory 를 필드로 제공하면 동시성 문제는 어떻게 될까?
             동시성 문제는 JPAQueryFactory 를 생성 할 때 제공하는 EntityManager(em)에 달려있다.

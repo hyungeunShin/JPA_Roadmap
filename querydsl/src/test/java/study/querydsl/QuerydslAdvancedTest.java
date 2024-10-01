@@ -7,7 +7,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -24,7 +23,7 @@ import study.querydsl.entity.Team;
 
 import java.util.List;
 
-import static study.querydsl.entity.QMember.*;
+import static study.querydsl.entity.QMember.member;
 
 @Slf4j
 @SpringBootTest
@@ -37,7 +36,7 @@ class QuerydslAdvancedTest {
     JPAQueryFactory queryFactory;
 
     @BeforeEach
-    public void before() {
+    void before() {
         queryFactory = new JPAQueryFactory(em);
 
         Team teamA = new Team("teamA");
@@ -70,7 +69,7 @@ class QuerydslAdvancedTest {
     @Order(2)
     @DisplayName("프로젝션2 - Tuple 반환")
     void queryDSL2() {
-        //프로젝션 대상이 둘 이상이면 튜플이나 DTO로 조회
+        //프로젝션 대상이 둘 이상이면 튜플이나 DTO 로 조회
         List<Tuple> list = queryFactory.select(member.username, member.age)
                                        .from(member)
                                        .fetch();
@@ -82,7 +81,13 @@ class QuerydslAdvancedTest {
     @Order(3)
     @DisplayName("프로젝션3 - DTO 반환")
     void queryDSL3() {
-        //프로젝션 대상이 둘 이상이면 튜플이나 DTO로 조회
+        //프로젝션 대상이 둘 이상이면 튜플이나 DTO 로 조회
+        /*
+        순수 JPA 에서 DTO 를 조회할 때는 new 명령어를 사용해야함
+        DTO 의 package 이름을 다 적어줘야해서 지저분함
+        생성자 방식만 지원함
+
+        */
         List<MemberDTO> list = em.createQuery("select new study.querydsl.dto.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
                                  .getResultList();
 
@@ -92,14 +97,14 @@ class QuerydslAdvancedTest {
     /*
     Querydsl 빈 생성(Bean population)
 
-    결과를 DTO 반환할 때 사용 시 다음 3가지 방법 지원
+    Querydsl 은 결과를 DTO 반환할 때 사용 시 다음 3가지 방법 지원
         - 프로퍼티 접근
         - 필드 직접 접근
         - 생성자 사용
     */
     @Test
     @Order(4)
-    @DisplayName("프로젝션3 - DTO 반환 - 프로퍼티 접근(Setter)")
+    @DisplayName("QueryDSL DTO 반환 - 프로퍼티 접근(Setter)")
     void queryDSL4() {
         List<MemberDTO> list = queryFactory.select(Projections.bean(MemberDTO.class, member.username, member.age))
                                            .from(member)
@@ -110,7 +115,7 @@ class QuerydslAdvancedTest {
 
     @Test
     @Order(5)
-    @DisplayName("프로젝션3 - DTO 반환 - 필드 직접 접근")
+    @DisplayName("QueryDSL DTO 반환 - 필드 직접 접근")
     void queryDSL5() {
         List<MemberDTO> list = queryFactory.select(Projections.fields(MemberDTO.class, member.username, member.age))
                                            .from(member)
@@ -121,7 +126,7 @@ class QuerydslAdvancedTest {
 
     @Test
     @Order(6)
-    @DisplayName("프로젝션3 - DTO 반환 - 별칭이 다를 때")
+    @DisplayName("QueryDSL DTO 반환 - 별칭이 다를 때")
     void queryDSL6() {
         /*
         프로퍼티나, 필드 접근 생성 방식에서 이름이 다를 때 해결 방안
@@ -130,13 +135,20 @@ class QuerydslAdvancedTest {
         */
         QMember memberSub = new QMember("memberSub");
 
+//        List<UserDTO> list = queryFactory.select(Projections.fields(UserDTO.class
+//                                                //매핑이 안되서 null
+//                                                , member.username
+//                                                , member.age))
+//                                         .from(member)
+//                                         .fetch();
+
         List<UserDTO> list = queryFactory.select(Projections.fields(UserDTO.class
                                                 , member.username.as("name")
-                                                , ExpressionUtils.as(
-                                                        JPAExpressions.select(memberSub.age.max()).from(memberSub), "age")
-                                                ))
+                                                , ExpressionUtils.as(JPAExpressions.select(memberSub.age.max()).from(memberSub), "age")))
                                          .from(member)
                                          .fetch();
+
+
 
         log.info("{}", list);
     }
@@ -156,6 +168,13 @@ class QuerydslAdvancedTest {
     @Order(8)
     @DisplayName("프로젝션3 - DTO 반환 - @QueryProjection")
     void queryDSL8() {
+        /*
+        이 방법은 컴파일러로 타입을 체크할 수 있으므로 가장 안전한 방법이다. -> 위의 생성자 사용은 컴파일 시점에나 오류를 알 수 있다.
+        다만 DTO 에 QueryDSL 어노테이션을 유지해야 하는 점과 DTO 까지 Q 파일을 생성해야 하는 단점이 있다.
+
+        참고: @QueryProjection 을 사용하면 해당 DTO 가 Querydsl 을 의존하게 된다.
+        이런 의존이 싫으면 해당 에노테이션을 제거하고 Projection.bean(), fields(), constructor() 을 사용하면 된다.
+        */
         List<MemberDTO> list = queryFactory.select(new QMemberDTO(member.username, member.age))
                                            .from(member)
                                            .fetch();
@@ -217,8 +236,8 @@ class QuerydslAdvancedTest {
 
     private List<Member> searchMember2(String usernameCond, Integer ageCond) {
         return queryFactory.selectFrom(member)
-                .where(usernameEq(usernameCond), ageEq(ageCond))
-                .fetch();
+                           .where(usernameEq(usernameCond), ageEq(ageCond))
+                           .fetch();
     }
 
     private BooleanExpression usernameEq(String usernameCond) {
@@ -233,12 +252,18 @@ class QuerydslAdvancedTest {
     @Order(12)
     @DisplayName("벌크 연산 - 수정1")
     void queryDSL12() {
+        //주의: JPQL 배치와 마찬가지로, 영속성 컨텍스트에 있는 엔티티를 무시하고 실행되기 때문에 배치 쿼리를 실행하고 나면 영속성 컨텍스트를 초기화 하는 것이 안전하다.
         long count = queryFactory.update(member)
                                  .set(member.username, "비회원")
                                  .where(member.age.lt(20))
                                  .execute();
 
         log.info("{}", count);
+
+        //DB 에서 데이터를 조회해와도 영속성 컨텍스트가 우선권을 가지고 있기 때문에 DB 에서 가져온 데이터를 버린다.
+        //그렇기 때문에 DB 와 영속성 컨텍스트 간에 데이터가 다르다.
+        List<Member> list = queryFactory.selectFrom(member).fetch();
+        log.info("{}", list);
     }
 
     @Test
