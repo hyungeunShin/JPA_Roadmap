@@ -1,5 +1,6 @@
 package com.example.user.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -8,7 +9,9 @@ import lombok.ToString;
 @Setter
 @ToString
 public class FindIdDTO {
+    @NotBlank
     private String name;
 
-    private String phone;
+    @NotBlank
+    private String email;
 }

@@ -41,7 +41,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Transactional
     @Override
-    public Long saveBoard(RegisterBoardDTO dto) throws IOException, NullPointerException {
+    public Long saveBoard(RegisterBoardDTO dto) throws IOException {
         CustomUser principal = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findById(principal.getId()).orElseThrow(NullPointerException::new);
 
@@ -59,7 +59,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardDetailDTO findBoardDetail(Long id) throws NullPointerException {
+    public BoardDetailDTO findBoardDetail(Long id) {
         Board board = repository.findById(id).orElseThrow(NullPointerException::new);
 
         CustomUser principal = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -72,7 +72,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Transactional
     @Override
-    public List<String> editBoard(EditBoardDTO dto) throws IOException, NullPointerException {
+    public List<String> editBoard(EditBoardDTO dto) throws IOException {
         Board board = repository.findById(dto.getId()).orElseThrow(NullPointerException::new);
 
         List<String> deleteFileUploadPath = null;
@@ -88,21 +88,21 @@ public class BoardServiceImpl implements BoardService {
 
     @Transactional
     @Override
-    public void deleteBoard(Long id) throws NullPointerException {
+    public void deleteBoard(Long id) {
         Board board = repository.findById(id).orElseThrow(NullPointerException::new);
         repository.remove(board);
     }
 
     private void saveAttachFile(MultipartFile[] files, Board board) throws IOException {
         for(MultipartFile multipartFile : files) {
-            if(!multipartFile.isEmpty()) {
-                String ext = fileStore.extractExt(Objects.requireNonNull(multipartFile.getOriginalFilename(), "이미지 이름이 존재하지 않습니다."));
+            if(multipartFile != null && !multipartFile.isEmpty()) {
                 String uploadFileName = fileStore.uploadFile(multipartFile);
-                String uploadPath = fileStore.getFullPath(uploadFileName);
+//                String ext = fileStore.extractExt(multipartFile.getOriginalFilename());
+//                String uploadPath = fileStore.getFullPath(uploadFileName);
+//
+//                AttachFile attachFile = new AttachFile(multipartFile, uploadFileName, uploadPath, ext);
 
-                AttachFile attachFile = new AttachFile(multipartFile, uploadFileName, uploadPath, ext);
-
-                board.addAttachFile(attachFile);
+//                board.addAttachFile(attachFile);
             }
         }
     }

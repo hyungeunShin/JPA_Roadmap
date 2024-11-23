@@ -2,22 +2,24 @@ package com.example.user.service;
 
 import com.example.user.domain.User;
 import com.example.user.dto.*;
-import com.example.util.ServiceResult;
 
 import java.io.IOException;
+import java.util.Map;
 
 public interface UserService {
-    ServiceResult register(RegisterUserDTO dto) throws IOException, NullPointerException;
+    void register(RegisterUserDTO dto) throws IOException;
 
-    ServiceResult idCheck(String username);
+    boolean duplicatedId(String username);
 
-    String findId(FindIdDTO dto) throws NullPointerException;
+    boolean duplicatedEmail(Long id, String email);
 
-    User findPw(FindPwDTO dto) throws NullPointerException;
+    String findId(FindIdDTO dto);
 
-    void changePassword(ResetPwDTO dto) throws NullPointerException;
+    User findPassword(FindPwDTO dto);
 
-    ProfileFormDTO findUser(Long id) throws NullPointerException;
+    void changePassword(ResetPwDTO dto);
 
-    User editProfile(ProfileEditDTO dto) throws IOException, NullPointerException;
+    EditUserViewDTO findUser(Long id);
+
+    User edit(EditUserDTO dto) throws IOException;
 }

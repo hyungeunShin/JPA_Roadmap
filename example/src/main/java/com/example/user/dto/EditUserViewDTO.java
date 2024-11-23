@@ -11,12 +11,8 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-public class ProfileFormDTO {
+public class EditUserViewDTO {
     private Long id;
-
-    private String username;
-
-    private String password;
 
     private String name;
 
@@ -28,25 +24,18 @@ public class ProfileFormDTO {
 
     private String postCode;
 
-    private String address1;
+    private String address;
 
-    private String address2;
+    private String detailAddress;
 
-    private String uploadFileName;
-
-    public ProfileFormDTO(User user) {
+    public EditUserViewDTO(User user) {
         this.id = user.getId();
-        this.username = user.getUsername();
-        this.password = user.getPassword();
         this.name = user.getName();
         this.gender = user.getGender();
         this.email = user.getEmail();
         this.phone = user.getPhone();
         this.postCode = user.getAddress().getPostCode();
-        this.address1 = user.getAddress().getAddress();
-        this.address2 = user.getAddress().getDetailAddress();
-        if(user.getProfile() != null) {
-            this.uploadFileName = user.getProfile().getUploadFileName();
-        }
+        this.address = user.getAddress().getAddress();
+        this.detailAddress = user.getAddress().getDetailAddress();
     }
 }

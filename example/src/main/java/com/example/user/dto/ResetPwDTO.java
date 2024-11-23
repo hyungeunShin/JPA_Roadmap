@@ -14,10 +14,10 @@ public class ResetPwDTO {
     private Long id;
 
     @NotEmpty
-    private String newPw;
+    private String newPassword;
 
     @NotEmpty
-    private String newPw2;
+    private String checkPassword;
 
     public ResetPwDTO(Long id) {
         this.id = id;

@@ -5,11 +5,12 @@ import com.example.user.domain.Gender;
 import com.example.user.domain.User;
 import com.example.user.dto.*;
 import com.example.user.service.UserService;
-import com.example.util.ServiceResult;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,12 +23,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Map;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class UserController {
     private final UserService service;
+
+    private final MessageSource messageSource;
 
     @ModelAttribute("genderTypes")
     public Gender[] genderTypes() {
@@ -45,59 +50,65 @@ public class UserController {
         return "user/register";
     }
 
-    @PostMapping("/register")
-    public String register(@Validated @ModelAttribute("user") RegisterUserDTO dto, BindingResult bindingResult, Model model, RedirectAttributes ra) {
-        log.info("회원가입 정보 : {}", dto);
+    @ResponseBody
+    @PostMapping("/duplicatedId")
+    public ResponseEntity<String> duplicatedId(@RequestParam("username") String username, HttpServletRequest request) {
+        return ResponseEntity.ok(service.duplicatedId(username) ? messageSource.getMessage("Duplicate.Id", null, request.getLocale()) : messageSource.getMessage("Not.Duplicate.Id", null, request.getLocale()));
+    }
 
-        if(!dto.getAgree()) {
-            bindingResult.addError(new FieldError("user", "agree", "개인정보 수집을 동의해주세요."));
-        }
+    @ResponseBody
+    @PostMapping("/duplicatedEmail")
+    public ResponseEntity<String> duplicatedEmail(@RequestParam(name = "id", required = false) Long id, @RequestParam("email") String email, HttpServletRequest request) {
+        return ResponseEntity.ok(service.duplicatedEmail(id, email) ? messageSource.getMessage("Duplicate.Email", null, request.getLocale()) : messageSource.getMessage("Not.Duplicate.Email", null, request.getLocale()));
+    }
+
+    @PostMapping("/register")
+    public String register(@Validated @ModelAttribute("user") RegisterUserDTO dto, BindingResult bindingResult, Model model, RedirectAttributes ra, HttpServletRequest request) {
+        log.info("회원가입 정보 : {}", dto);
 
         if(bindingResult.hasErrors()) {
             return "user/register";
         }
 
-        ServiceResult serviceResult = null;
+        if(service.duplicatedId(dto.getUsername())) {
+            model.addAttribute("message", messageSource.getMessage("Duplicate.Id", null, request.getLocale()));
+            return "user/register";
+        }
+
+        if(service.duplicatedEmail(null, dto.getEmail())) {
+            model.addAttribute("message", messageSource.getMessage("Duplicate.Email", null, request.getLocale()));
+            return "user/register";
+        }
+
         try {
-            serviceResult = service.register(dto);
-        } catch (IOException e) {
-            model.addAttribute("message", "다시 시도 해주세요.");
-            return "user/register";
-        } catch(NullPointerException e) {
-            model.addAttribute("message", e.getMessage());
-            return "user/register";
-        }
-
-        if(serviceResult.equals(ServiceResult.CREATED)) {
-            ra.addFlashAttribute("message", "회원가입이 완료되었습니다.");
+            service.register(dto);
+            ra.addFlashAttribute("message", messageSource.getMessage("Success.Save.User", null, request.getLocale()));
             return "redirect:/login";
-        } else {
-            model.addAttribute("message", "다시 시도 해주세요.");
+        } catch(IOException e) {
+            model.addAttribute("message", messageSource.getMessage(e.getMessage(), null, request.getLocale()));
             return "user/register";
         }
     }
 
-    @ResponseBody
-    @PostMapping("/idCheck")
-    public ResponseEntity<ServiceResult> idCheck(@RequestParam("username") String username) {
-        log.info("idCheck.id : {}", username);
-        ServiceResult result = service.idCheck(username);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    @GetMapping("/findId")
+    public String idForgetForm(Model model) {
+        model.addAttribute("user", new FindIdDTO());
+        return "user/findId";
     }
 
-    @GetMapping("/idForget")
-    public String idForgetForm() {
-        return "user/forgetId";
-    }
+    @PostMapping("/findId")
+    public String idForget(@Validated @ModelAttribute("user") FindIdDTO dto, BindingResult bindingResult, Model model, RedirectAttributes ra, HttpServletRequest request) {
+        if(bindingResult.hasErrors()) {
+            return "user/findId";
+        }
 
-    @ResponseBody
-    @PostMapping("/idForget")
-    public ResponseEntity<String> idForget(@RequestBody FindIdDTO dto) {
         try {
             String username = service.findId(dto);
-            return new ResponseEntity<>(username, HttpStatus.OK);
+            ra.addFlashAttribute("message", messageSource.getMessage("Success.Find.Id", new Object[] {username}, request.getLocale()));
+            return "redirect:/login";
         } catch(NullPointerException e) {
-            return new ResponseEntity<>("", HttpStatus.OK);
+            model.addAttribute("message", messageSource.getMessage("Not.Found.User", null, request.getLocale()));
+            return "user/findId";
         }
     }
 
@@ -107,25 +118,25 @@ public class UserController {
     }
 
     @PostMapping("/pwForget")
-    public String pwForget(@Validated @ModelAttribute("user") FindPwDTO dto, BindingResult bindingResult, Model model) {
+    public String pwForget(@Validated @ModelAttribute("user") FindPwDTO dto, BindingResult bindingResult, Model model, HttpServletRequest request) {
         if(bindingResult.hasErrors()) {
             return "user/forgetPw";
         }
 
         try {
-            User user = service.findPw(dto);
+            User user = service.findPassword(dto);
             model.addAttribute("user", new ResetPwDTO(user.getId()));
             return "user/resetPw";
         } catch(NullPointerException e) {
-            model.addAttribute("message", "존재하지 않는 회원입니다.");
+            model.addAttribute("message", ResponseEntity.badRequest().body(messageSource.getMessage("Not.Found.User", null, request.getLocale())));
             return "user/forgetPw";
         }
     }
 
     @PostMapping("/resetPw")
-    public String resetPw(@Validated @ModelAttribute("user") ResetPwDTO dto, BindingResult bindingResult, RedirectAttributes ra) {
-        if(!StringUtils.equals(dto.getNewPw(), dto.getNewPw2())) {
-            bindingResult.addError(new FieldError("user", "newPw2", "비밀번호를 확인해주세요."));
+    public String resetPw(@Validated @ModelAttribute("user") ResetPwDTO dto, BindingResult bindingResult, Model model, RedirectAttributes ra, HttpServletRequest request) {
+        if(!StringUtils.equals(dto.getNewPassword(), dto.getCheckPassword())) {
+            bindingResult.addError(new FieldError("user", "checkPassword", messageSource.getMessage("Not.Same.Password", null, request.getLocale())));
         }
 
         if(bindingResult.hasErrors()) {
@@ -134,41 +145,37 @@ public class UserController {
 
         try {
             service.changePassword(dto);
-            ra.addFlashAttribute("message", "비밀번호가 변경되었습니다.");
+            ra.addFlashAttribute("message", messageSource.getMessage("Success.Change.Password", null, request.getLocale()));
+            return "redirect:/login";
         } catch(NullPointerException e) {
-            ra.addFlashAttribute("message", "존재하지 않는 회원입니다.");
+            model.addAttribute("message", messageSource.getMessage("Not.Found.User", null, request.getLocale()));
+            return "user/resetPw";
         }
-
-        return "redirect:/login";
     }
 
     @GetMapping("/profile")
     public String profileForm(Model model) {
         CustomUser user = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ProfileFormDTO dto = service.findUser(user.getId());
+        EditUserViewDTO dto = service.findUser(user.getId());
         log.info("profile : {}", dto);
         model.addAttribute("user", dto);
         return "user/profile";
     }
 
     @PostMapping("/profile")
-    public String editProfile(@ModelAttribute("user") @Validated ProfileEditDTO dto, BindingResult bindingResult, Model model, RedirectAttributes ra) {
+    public String editProfile(@ModelAttribute("user") @Validated EditUserDTO dto, BindingResult bindingResult, Model model, RedirectAttributes ra, HttpServletRequest request) {
         if(bindingResult.hasErrors()) {
-            ProfileFormDTO formDTO = service.findUser(dto.getId());
-            dto.setUploadFileName(formDTO.getUploadFileName());
             return "user/profile";
         }
 
         try {
-            User user = service.editProfile(dto);
-            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(new CustomUser(user), null, user.getAuthorities()));
+            User user = service.edit(dto);
+            CustomUser customUser = new CustomUser(user);
+            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(customUser, null, customUser.getAuthorities()));
             ra.addFlashAttribute("message", "프로필이 수정되었습니다.");
             return "redirect:/profile";
-        } catch(NullPointerException e) {
-            model.addAttribute("message", e.getMessage());
-            return "user/profile";
         } catch(IOException e) {
-            model.addAttribute("message", "다시 시도해주세요.");
+            model.addAttribute("message", messageSource.getMessage(e.getMessage(), null, request.getLocale()));
             return "user/profile";
         }
     }

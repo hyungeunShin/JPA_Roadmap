@@ -24,15 +24,15 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
-                           .requestMatchers("/ckeditor/**", "/dist/**", "/plugins/**")
-                           .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+                           .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+                           .requestMatchers("/ckeditor/**", "/dist/**", "/plugins/**");
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable).cors(AbstractHttpConfigurer::disable);
 
-        String[] permitAllRequest = {"/login", "/register", "/idCheck", "/idForget", "/pwForget", "/resetPw", "/"};
+        String[] permitAllRequest = {"/login", "/register", "/duplicatedId", "/duplicatedEmail", "/findId", "/pwForget", "/resetPw", "/"};
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                     .requestMatchers(permitAllRequest).permitAll()

@@ -11,11 +11,11 @@ public interface BoardService {
 
     int getBoardTotalCount(PaginationInfo<BoardListDTO> paginationInfo);
 
-    Long saveBoard(RegisterBoardDTO dto) throws IOException, NullPointerException;
+    Long saveBoard(RegisterBoardDTO dto) throws IOException;
 
-    BoardDetailDTO findBoardDetail(Long id) throws NullPointerException;
+    BoardDetailDTO findBoardDetail(Long id);
 
-    List<String> editBoard(EditBoardDTO dto) throws IOException, NullPointerException;
+    List<String> editBoard(EditBoardDTO dto) throws IOException;
 
-    void deleteBoard(Long id) throws NullPointerException;
+    void deleteBoard(Long id);
 }

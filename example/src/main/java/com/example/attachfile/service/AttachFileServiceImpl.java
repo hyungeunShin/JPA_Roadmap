@@ -1,6 +1,7 @@
 package com.example.attachfile.service;
 
 import com.example.attachfile.domain.AttachFile;
+import com.example.attachfile.repository.AttachFileJpaRepository;
 import com.example.attachfile.repository.AttachFileRepository;
 import com.example.attachfile.dto.BoardFileDownloadDTO;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AttachFileServiceImpl implements AttachFileService {
-    private final AttachFileRepository repository;
+//    private final AttachFileRepository repository;
+
+    private final AttachFileJpaRepository repository;
 
     @Override
     public BoardFileDownloadDTO findAttachFile(Long id) {

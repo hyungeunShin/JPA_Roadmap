@@ -142,7 +142,7 @@ public class BoardController {
             List<String> uploadPaths = service.editBoard(dto);
             if(uploadPaths != null) {
                 for(String uploadPath : uploadPaths) {
-                    fileStore.deleteFile(uploadPath);
+//                    fileStore.deleteFile(uploadPath);
                 }
             }
 

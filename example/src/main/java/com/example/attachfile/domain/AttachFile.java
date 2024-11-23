@@ -2,16 +2,13 @@ package com.example.attachfile.domain;
 
 import com.example.board.domain.Board;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.apache.commons.io.FileUtils;
-import org.springframework.web.multipart.MultipartFile;
+import lombok.*;
 
 @Entity
 @Getter
 @Table(name = "file")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString(exclude = "board")
 public class AttachFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,12 +33,13 @@ public class AttachFile {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    public AttachFile(MultipartFile file, String uploadFileName, String uploadFilePath, String fileExt) {
-        this.originalFileName = file.getOriginalFilename();
+    @Builder
+    public AttachFile(String originalFileName, String uploadFileName, String uploadFilePath, long fileSize, String fileFancySize, String fileExt) {
+        this.originalFileName = originalFileName;
         this.uploadFileName = uploadFileName;
         this.uploadFilePath = uploadFilePath;
-        this.fileSize = file.getSize();
-        this.fileFancySize = FileUtils.byteCountToDisplaySize(file.getSize());
+        this.fileSize = fileSize;
+        this.fileFancySize = fileFancySize;
         this.fileExt = fileExt;
         this.fileDownloadCount = 0;
     }

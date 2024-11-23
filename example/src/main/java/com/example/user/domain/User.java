@@ -1,28 +1,22 @@
 package com.example.user.domain;
 
-import com.example.board.domain.Board;
 import com.example.attachfile.domain.AttachFile;
+import com.example.board.domain.Board;
 import com.example.util.TimeEntity;
-import com.example.user.dto.ProfileEditDTO;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
 @Getter
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends TimeEntity implements UserDetails {
+public class User extends TimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -39,6 +33,7 @@ public class User extends TimeEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Column(unique = true)
     private String email;
 
     private String phone;
@@ -73,55 +68,19 @@ public class User extends TimeEntity implements UserDetails {
         this.profile = profile;
     }
 
-    public void editProfile(ProfileEditDTO dto) {
-        this.username = dto.getUsername();
-        this.password = dto.getPassword();
-        this.name = dto.getName();
-        this.gender = dto.getGender();
-        this.email = dto.getEmail();
-        this.phone = dto.getPhone();
-        this.address = new Address(dto.getPostCode(), dto.getAddress1(), dto.getAddress2());
-        if(dto.getFile() != null) {
-            this.profile = dto.getFile();
+    public void editProfile(String password, String name, Gender gender, String email, String phone, Address address, AttachFile profile) {
+        if(password != null) {
+            this.password = password;
         }
+        this.name = name;
+        this.gender = gender;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.profile = profile;
     }
 
     public void changePassword(String password) {
         this.password = password;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.username;
-    }
-
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(this.role.getDescription()));
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 }

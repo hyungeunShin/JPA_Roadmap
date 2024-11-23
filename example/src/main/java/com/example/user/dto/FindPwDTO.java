@@ -13,8 +13,8 @@ public class FindPwDTO {
     private String username;
 
     @NotEmpty
-    private String phone;
+    private String name;
 
     @NotEmpty
-    private String name;
+    private String email;
 }

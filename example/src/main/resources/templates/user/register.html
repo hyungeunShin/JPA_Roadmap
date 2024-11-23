@@ -35,7 +35,7 @@
 				<div class="input-group mb-3">
 					<input type="text" class="form-control" th:field="*{username}" placeholder="아이디를 입력해주세요">
 					<span class="input-group-append">
-						<button type="button" class="btn btn-secondary btn-flat" id="idCheckBtn">중복확인</button>
+						<button type="button" class="btn btn-secondary btn-flat" id="idDuplicateBtn">중복확인</button>
 					</span>
 					<span class="error invalid-feedback" style="display: block;" th:errors="*{username}"></span>
 				</div>
@@ -66,6 +66,9 @@
 				<label for="email" style="margin-top: 10px;">이메일</label>
 				<div class="input-group mb-3">
 					<input type="text" class="form-control" th:field="*{email}" placeholder="이메일을 입력해주세요">
+					<span class="input-group-append">
+						<button type="button" class="btn btn-secondary btn-flat" id="emailDuplicateBtn">중복확인</button>
+					</span>
 					<span class="error invalid-feedback" style="display: block;" th:errors="*{email}"></span>
 				</div>
 				
@@ -84,15 +87,15 @@
 					<span class="error invalid-feedback" style="display: block;" th:errors="*{postCode}"></span>
 				</div>
 				
-				<label for="address1">주소</label>
+				<label for="address">주소</label>
 				<div class="input-group mb-3">
-					<input type="text" class="form-control" th:field="*{address1}" placeholder="주소를 입력해주세요">
-					<span class="error invalid-feedback" style="display: block;" th:errors="*{address1}"></span>
+					<input type="text" class="form-control" th:field="*{address}" placeholder="주소를 입력해주세요">
+					<span class="error invalid-feedback" style="display: block;" th:errors="*{address}"></span>
 				</div>
 				
-				<label for="address2">상세주소</label>
+				<label for="detailAddress">상세주소</label>
 				<div class="input-group mb-3">
-					<input type="text" class="form-control" th:field="*{address2}" placeholder="상세주소를 입력해주세요">
+					<input type="text" class="form-control" th:field="*{detailAddress}" placeholder="상세주소를 입력해주세요">
 				</div>
 				
 				<div class="row">
@@ -101,7 +104,7 @@
 						<label for="agree" style="display: flex; align-items: flex-end; margin-left: 10px;"><a href="#">개인정보방침</a></label>
 					</div>
 					<div class="col-4">
-						<button type="button" class="btn btn-primary btn-block" id="signupBtn">가입하기</button>
+						<button type="submit" class="btn btn-primary btn-block" id="signupBtn">가입하기</button>
 					</div>
 				</div>
 				<span class="error invalid-feedback" style="display: block;" th:errors="*{agree}"></span>
@@ -129,26 +132,24 @@
 		$Register.ui.pageLoad();
 	});
 	
-	let idCheckFlag = false;
-	
 	$Register.ui = {
 		pageLoad: function() {
 			$("#profile").on("change", event => {
 				let file = event.target.files[0];
 				
-				if($Register.event.isImageFile(file)) {
+				// if($Register.event.isImageFile(file)) {
 					let reader = new FileReader();
 					reader.onload = function(e) {
 						$("#profileImg").attr("src", e.target.result);
 					}
 					reader.readAsDataURL(file);
-				} else {
-					alert("이미지 파일을 선택해주세요");
-					$("#profile").val("");
-				}
+				// } else {
+				// 	alert("이미지 파일을 선택해주세요");
+				// 	$("#profile").val("");
+				// }
 			});
 			
-			$("#idCheckBtn").on("click", function() {
+			$("#idDuplicateBtn").on("click", function() {
 				let id = $("#username").val();
 	
 				if(id == null || id === "") {
@@ -156,35 +157,32 @@
 					return false;
 				}
 				
-				fetch("/idCheck", {
+				fetch("/duplicatedId", {
 					method: "post",
 					body: new URLSearchParams({"username" : id})
 				})
-				.then(response => response.json())
+				.then(response => response.text())
 				.then(function(result) {
-					console.log(result);
-					if(result === "NOTEXIST") {
-						alert("사용 가능한 아이디입니다");
-						$("#memId").css("border-color", "green");
-						idCheckFlag = true;
-					} else {
-						alert("사용 불가능한 아이디입니다");
-						$("#memId").css("border-color", "red");
-					}
+					alert(result);
 				});
 			});
-			
-			$('#memId').on("change", function() {
-				idCheckFlag = false;
-			});
-			
-			$('#signupBtn').on("click", function() {
-				if(!idCheckFlag) {
-					alert("아이디 중복 확인 필요");
+
+			$("#emailDuplicateBtn").on("click", function() {
+				let email = $("#email").val();
+
+				if(email == null || email === "") {
+					alert("이메일을 입력해주세요");
 					return false;
 				}
-				
-				$('#signupForm').submit();
+
+				fetch("/duplicatedEmail", {
+					method: "post",
+					body: new URLSearchParams({"email" : email})
+				})
+				.then(response => response.text())
+				.then(function(result) {
+					alert(result);
+				});
 			});
 		}
 	};
@@ -192,39 +190,29 @@
 	$Register.event = {
 		isImageFile: function(file) {
 			let ext = file.name.split(".").pop().toLowerCase();
-			return ($.inArray(ext, ["jpg", "jpeg", "gif", "png"]) === -1) ? false : true;
+			return ($.inArray(ext, ["jpg", "jpeg", "gif", "png"]) !== -1);
 		},
 		
 		DaumPostcode: function() {
 			new daum.Postcode({
 		        oncomplete: function(data) {
-		            // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+		            var addr = '';
+		            var extraAddr = '';
 		
-		            // 각 주소의 노출 규칙에 따라 주소를 조합한다.
-		            // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
-		            var addr = ''; // 주소 변수
-		            var extraAddr = ''; // 참고항목 변수
-		
-		            //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
-		            if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+		            if (data.userSelectedType === 'R') {
 		                addr = data.roadAddress;
-		            } else { // 사용자가 지번 주소를 선택했을 경우(J)
+		            } else {
 		                addr = data.jibunAddress;
 		            }
 		
-		            // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
-		            if(data.userSelectedType === 'R'){
-		                // 법정동명이 있을 경우 추가한다. (법정리는 제외)
-		                // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
-		                if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+		            if(data.userSelectedType === 'R') {
+		                if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
 		                    extraAddr += data.bname;
 		                }
-		                // 건물명이 있고, 공동주택일 경우 추가한다.
-		                if(data.buildingName !== '' && data.apartment === 'Y'){
+		                if(data.buildingName !== '' && data.apartment === 'Y') {
 		                    extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
 		                }
-		                // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
-		                if(extraAddr !== ''){
+		                if(extraAddr !== '') {
 		                    extraAddr = ' (' + extraAddr + ')';
 		                }
 		            } 
