@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html th:replace="~{template/loginTemplate :: loginLayout(~{::div[@Class='register-box']}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
+<html th:replace="~{template/loginTemplate :: loginLayout('회원가입', ~{::div[@Class='register-box']}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
 
 <div class="register-box">
 	<div class="card card-outline card-primary">
@@ -137,22 +137,22 @@
 			$("#profile").on("change", event => {
 				let file = event.target.files[0];
 				
-				// if($Register.event.isImageFile(file)) {
+				if($Register.event.isImageFile(file)) {
 					let reader = new FileReader();
 					reader.onload = function(e) {
 						$("#profileImg").attr("src", e.target.result);
 					}
 					reader.readAsDataURL(file);
-				// } else {
-				// 	alert("이미지 파일을 선택해주세요");
-				// 	$("#profile").val("");
-				// }
+				} else {
+					alert("이미지 파일을 선택해주세요");
+					$("#profile").val("");
+				}
 			});
 			
 			$("#idDuplicateBtn").on("click", function() {
 				let id = $("#username").val();
 	
-				if(id == null || id === "") {
+				if(!id) {
 					alert("아이디를 입력해주세요");
 					return false;
 				}
@@ -162,15 +162,13 @@
 					body: new URLSearchParams({"username" : id})
 				})
 				.then(response => response.text())
-				.then(function(result) {
-					alert(result);
-				});
+				.then(result => alert(result));
 			});
 
 			$("#emailDuplicateBtn").on("click", function() {
 				let email = $("#email").val();
 
-				if(email == null || email === "") {
+				if(!email) {
 					alert("이메일을 입력해주세요");
 					return false;
 				}
@@ -180,9 +178,7 @@
 					body: new URLSearchParams({"email" : email})
 				})
 				.then(response => response.text())
-				.then(function(result) {
-					alert(result);
-				});
+				.then(result => alert(result));
 			});
 		}
 	};
@@ -196,10 +192,10 @@
 		DaumPostcode: function() {
 			new daum.Postcode({
 		        oncomplete: function(data) {
-		            var addr = '';
-		            var extraAddr = '';
+		            let addr = '';
+		            let extraAddr = '';
 		
-		            if (data.userSelectedType === 'R') {
+		            if(data.userSelectedType === 'R') {
 		                addr = data.roadAddress;
 		            } else {
 		                addr = data.jibunAddress;
@@ -218,8 +214,8 @@
 		            } 
 		
 		            document.getElementById('postCode').value = data.zonecode;
-		            document.getElementById("address1").value = addr;
-		            document.getElementById("address2").focus();
+		            document.getElementById("address").value = addr;
+		            document.getElementById("detailAddress").focus();
 		        }
 		    }).open();
 		}

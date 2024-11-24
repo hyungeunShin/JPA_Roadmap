@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html th:replace="~{template/loginTemplate :: loginLayout(~{::div[@Class='login-box']}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
+<html th:replace="~{template/loginTemplate :: loginLayout('로그인', ~{::div[@Class='login-box']}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
 
 <div class="login-box">
 	<div class="login-logo">
@@ -35,13 +35,13 @@
 						</div>
 					</div>
 					<div class="col-4">
-						<button type="submit" class="btn btn-primary btn-block" id="signinBtn">로그인</button>
+						<button type="submit" class="btn btn-primary btn-block">로그인</button>
 					</div>
 				</div>
 			</form>
 			
 			<p class="mb-1">
-				<a href="/idForget" th:href="@{|/findId|}">아이디 찾기</a> &amp; <a href="/pwForget" th:href="@{|/pwForget|}">비밀번호 찾기</a>
+				<a href="/findId" th:href="@{|/findId|}">아이디 찾기</a> &amp; <a href="/findPassword" th:href="@{|/findPassword|}">비밀번호 찾기</a>
 			</p>
 			<p class="mb-0">
 				<a href="/register" th:href="@{|/register|}" class="text-center">회원가입</a>
@@ -49,5 +49,3 @@
 		</div>
 	</div>
 </div>
-
-<script type="text/javascript"></script>

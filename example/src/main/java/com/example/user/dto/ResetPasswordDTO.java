@@ -1,6 +1,6 @@
 package com.example.user.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,17 +9,17 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ResetPwDTO {
+public class ResetPasswordDTO {
     @NotNull
     private Long id;
 
-    @NotEmpty
+    @NotBlank
     private String newPassword;
 
-    @NotEmpty
+    @NotBlank
     private String checkPassword;
 
-    public ResetPwDTO(Long id) {
+    public ResetPasswordDTO(Long id) {
         this.id = id;
     }
 }

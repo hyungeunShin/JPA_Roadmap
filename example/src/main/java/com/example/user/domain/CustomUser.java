@@ -12,12 +12,14 @@ import java.util.Collections;
 public class CustomUser implements UserDetails {
     private final Long id;
     private final String username;
+    private final String password;
     private final String profile;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUser(com.example.user.domain.User user) {
         this.id = user.getId();
         this.username = user.getUsername();
+        this.password = user.getPassword();
         this.profile = user.getProfile() != null ? user.getProfile().getUploadFileName() : null;
         this.authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getDescription()));
     }
@@ -29,7 +31,7 @@ public class CustomUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override

@@ -16,7 +16,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
@@ -58,13 +57,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findPassword(FindPwDTO dto) {
+    public User findPassword(FindPasswordDTO dto) {
         return repository.findByUsernameAndNameAndEmail(dto.getUsername(), dto.getName(), dto.getEmail()).orElseThrow(NullPointerException::new);
     }
 
     @Override
     @Transactional
-    public void changePassword(ResetPwDTO dto) {
+    public void changePassword(ResetPasswordDTO dto) {
         User user = repository.findById(dto.getId()).orElseThrow(NullPointerException::new);
         user.changePassword(pe.encode(dto.getNewPassword()));
     }

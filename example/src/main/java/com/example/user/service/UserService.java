@@ -4,7 +4,6 @@ import com.example.user.domain.User;
 import com.example.user.dto.*;
 
 import java.io.IOException;
-import java.util.Map;
 
 public interface UserService {
     void register(RegisterUserDTO dto) throws IOException;
@@ -15,9 +14,9 @@ public interface UserService {
 
     String findId(FindIdDTO dto);
 
-    User findPassword(FindPwDTO dto);
+    User findPassword(FindPasswordDTO dto);
 
-    void changePassword(ResetPwDTO dto);
+    void changePassword(ResetPasswordDTO dto);
 
     EditUserViewDTO findUser(Long id);
 
