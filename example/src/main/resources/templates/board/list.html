@@ -8,14 +8,14 @@
 						<div class="card-header">
 							<div class="card-tools">
 								<!-- 검색 -->
-								<form class="input-group input-group-sm" style="width: 440px;" method="get" id="searchForm" action="/board/list" th:action th:object="${paginationInfo}">
+								<form class="input-group input-group-sm" style="width: 440px;" method="get" id="searchForm" action="/board/list" th:action>
 									<input type="hidden" name="page" id="page">
 
-									<select class="form-control" th:field="*{searchType}">
-										<option th:each="type : ${searchTypes}" th:value="${type.key}" th:text="${type.value}">제목</option>
+									<select class="form-control" name="searchType">
+										<option th:each="type : ${searchTypes}" th:value="${type.key}" th:text="${type.value}" th:selected="${type.key == searchType}">제목</option>
 									</select>
 
-									<input type="text" th:field="*{searchWord}" class="form-control float-right" placeholder="Search">
+									<input type="text" name="searchWord" th:value="${searchWord}" class="form-control float-right" placeholder="Search">
 
 									<div class="input-group-append">
 										<button type="submit" class="btn btn-default">
@@ -30,63 +30,62 @@
 						<div class="card-body">
 							<table class="table table-bordered">
 								<thead>
-									<tr>
-										<th style="width: 6%">#</th>
-										<th>제목</th>
-										<th style="width: 12%">작성자</th>
-										<th style="width: 12%">작성일</th>
-										<th style="width: 10%">조회수</th>
-									</tr>
+								<tr>
+									<th style="width: 6%">#</th>
+									<th>제목</th>
+									<th style="width: 12%">작성자</th>
+									<th style="width: 12%">작성일</th>
+									<th style="width: 10%">조회수</th>
+								</tr>
 								</thead>
 								<tbody>
-									<th:block th:if="${#lists.size(paginationInfo.dataList) == 0}">
-										<td colspan="5">조회하신 게시글이 존재하지 않습니다.</td>
-									</th:block>
-									<th:block th:if="${#lists.size(paginationInfo.dataList) != 0}">
-											<tr th:each="board : ${paginationInfo.dataList}">
-												<td th:text="${board.id}">번호</td>
-												<td><a th:href="@{/board/detail/{boardNo}(boardNo = ${board.id})}" th:text="${board.boardTitle}">제목</a></td>
-												<td th:text="${board.boardWriter}">작성자</td>
-												<td th:text="${#temporals.format(board.boardRegisterDate, 'yyyy-MM-dd HH:mm')}">등록일자</td>
-												<td th:text="${board.boardHit}">조회수</td>
-											</tr>
-									</th:block>
+								<th:block th:if="${boardList.content.isEmpty()}">
+									<td colspan="5">조회하신 게시글이 존재하지 않습니다.</td>
+								</th:block>
+								<th:block th:if="${!boardList.content.isEmpty()}">
+									<tr th:each="board : ${boardList}">
+										<td th:text="${board.rn}">번호</td>
+										<td><a th:href="@{/board/detail/{boardNo}(boardNo = ${board.id})}" th:text="${board.boardTitle}">제목</a></td>
+										<td th:text="${board.boardWriter}">작성자</td>
+										<td th:text="${#temporals.format(board.boardRegisterDate, 'yyyy-MM-dd HH:mm')}">등록일자</td>
+										<td th:text="${board.boardHit}">조회수</td>
+									</tr>
+								</th:block>
 								</tbody>
 							</table>
 						</div>
 						<div class="card-body">
 							<button type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/register}'|" id="newBtn">등록</button>
 						</div>
-						<div class="card-footer clearfix" id="pagingArea" th:utext="${paginationInfo.pagingHTML}">
-							<!--페이징-->
+						<div th:if="${!boardList.isEmpty()}" class="card-footer clearfix" id="pagingArea">
+							<ul class="pagination pagination-sm m-0 float-right"
+								th:with="pageNumber = ${boardList.pageable.pageNumber},
+										 pageSize = ${boardList.pageable.pageSize},
+										 totalPages = ${boardList.totalPages},
+										 startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+										 tempEndPage = ${startPage + pageSize - 1},
+										 endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})">
+
+								<li th:classappend="${boardList.first} ? 'disabled'" class="page-item">
+									<a class="page-link" th:href="${boardList.first} ? '#' : @{/board/list(page=${pageNumber - 1})}">
+										<span aria-hidden="true">&lt;</span>
+									</a>
+								</li>
+
+								<li th:each="page: ${#numbers.sequence(startPage, endPage)}" th:classappend="${page == pageNumber + 1} ? 'active'" class="page-item">
+									<a th:text="${page}" class="page-link" th:href="@{/board/list(page=${page - 1})}"></a>
+								</li>
+
+								<li th:classappend="${boardList.last} ? 'disabled'" class="page-item">
+									<a class="page-link" th:href="${boardList.last} ? '#' : @{/board/list(page=${pageNumber + 1})}" aria-label="Next">
+										<span aria-hidden="true">&gt;</span>
+									</a>
+								</li>
+							</ul>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</section>
-	<script type="text/javascript">
-	(function(W, D, $) {
-		'use strict';
-		W.$List = W.$List || {};
-
-		$(document).ready(function() {
-			$List.ui.pageLoad();
-		});
-
-		$List.ui = {
-			pageLoad: function() {
-				let form = $('#searchForm');
-				let area = $('#pagingArea');
-
-				area.on("click", "a", function(event) {
-					event.preventDefault();
-					let pageNo = $(event.target).data('page');
-					form.find("#page").val(pageNo);
-					form.submit();
-				});
-			}
-		}
-	}(window, document, jQuery))
-	</script>
 </html>

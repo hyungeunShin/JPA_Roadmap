@@ -1,21 +1,21 @@
 package com.example.board.dto;
 
 import com.example.board.domain.Board;
+import com.querydsl.core.annotations.QueryProjection;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardListDTO {
+    private int rn;
+
     private Long id;
 
     private String boardTitle;
-
-    private String boardContent;
 
     private int boardHit;
 
@@ -23,12 +23,13 @@ public class BoardListDTO {
 
     private LocalDateTime boardRegisterDate;
 
-    public BoardListDTO(Board board) {
-        this.id = board.getId();
-        this.boardTitle = board.getBoardTitle();
-        this.boardContent = board.getBoardContent();
-        this.boardHit = board.getBoardHit();
-        this.boardWriter = board.getUser().getUsername();
-        this.boardRegisterDate = board.getRegisterDate();
+    @QueryProjection
+    public BoardListDTO(int rn, Long id, String boardTitle, int boardHit, String boardWriter, LocalDateTime boardRegisterDate) {
+        this.rn = rn;
+        this.id = id;
+        this.boardTitle = boardTitle;
+        this.boardHit = boardHit;
+        this.boardWriter = boardWriter;
+        this.boardRegisterDate = boardRegisterDate;
     }
 }

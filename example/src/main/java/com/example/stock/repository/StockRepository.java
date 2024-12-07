@@ -50,7 +50,7 @@ public class StockRepository {
                     .from(stock)
                     .where(builder)
                     .orderBy(stock.itemName.asc())
-                    .limit(paginationInfo.getScreenSize())
+                    .limit(paginationInfo.getPageSize())
                     .offset(paginationInfo.getStartRow())
                     .fetch();
     }

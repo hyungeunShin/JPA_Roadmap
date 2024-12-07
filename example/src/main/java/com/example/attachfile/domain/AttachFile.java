@@ -44,7 +44,7 @@ public class AttachFile {
         this.fileDownloadCount = 0;
     }
 
-    public void attachBoard(Board board) {
+    public void attachToBoard(Board board) {
         this.board = board;
     }
 }

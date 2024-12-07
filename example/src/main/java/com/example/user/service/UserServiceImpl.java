@@ -2,6 +2,7 @@ package com.example.user.service;
 
 import com.example.attachfile.domain.AttachFile;
 import com.example.user.domain.Address;
+import com.example.user.domain.CustomUser;
 import com.example.user.domain.Role;
 import com.example.user.domain.User;
 import com.example.user.dto.*;
@@ -69,25 +70,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public EditUserViewDTO findUser(Long id) {
-        return new EditUserViewDTO(repository.findById(id).orElseThrow(NullPointerException::new));
+    public EditUserDTO findUser(Long id) {
+        return new EditUserDTO(repository.findById(id).orElseThrow(NullPointerException::new));
     }
 
     @Override
     @Transactional
-    public User edit(EditUserDTO dto) throws IOException {
-        User user = repository.findById(dto.getId()).orElseThrow(NullPointerException::new);
+    public CustomUser edit(Long id, EditUserDTO dto) throws IOException {
+        User user = repository.findById(id).orElseThrow(NullPointerException::new);
 
-        AttachFile profile = saveProfile(dto.getProfile());
+        AttachFile profile = dto.getProfile() != null ? saveProfile(dto.getProfile()) : user.getProfile();
 
         user.editProfile(
             StringUtils.hasText(dto.getNewPassword()) ? pe.encode(dto.getNewPassword()) : null
-            , dto.getName(), dto.getGender(), dto.getEmail(), dto.getPhone()
+            , dto.getName()
+            , dto.getGender()
+            , dto.getEmail()
+            , dto.getPhone()
             , new Address(dto.getPostCode(), dto.getAddress(), dto.getDetailAddress())
             , profile
         );
 
-        return user;
+        return new CustomUser(user);
     }
 
     private AttachFile saveProfile(MultipartFile multipartFile) throws IOException {

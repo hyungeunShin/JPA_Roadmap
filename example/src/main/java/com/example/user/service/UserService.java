@@ -1,5 +1,6 @@
 package com.example.user.service;
 
+import com.example.user.domain.CustomUser;
 import com.example.user.domain.User;
 import com.example.user.dto.*;
 
@@ -18,7 +19,7 @@ public interface UserService {
 
     void changePassword(ResetPasswordDTO dto);
 
-    EditUserViewDTO findUser(Long id);
+    EditUserDTO findUser(Long id);
 
-    User edit(EditUserDTO dto) throws IOException;
+    CustomUser edit(Long id, EditUserDTO dto) throws IOException;
 }

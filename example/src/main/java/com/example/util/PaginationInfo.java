@@ -10,10 +10,10 @@ import java.util.List;
 @Getter
 @Setter
 public class PaginationInfo<T> {
-	private int totalRecord;
+	private int totalCount;
 	private int totalPage;
 	private int currentPage;
-	private int screenSize = 20;
+	private int pageSize = 20;
 	private int blockSize = 5;
 	private int startRow;
 	private int endRow;
@@ -26,46 +26,46 @@ public class PaginationInfo<T> {
 	public PaginationInfo() {
 		
 	}
-	
+
 	public PaginationInfo(int screenSize, int blockSize) {
-		this.screenSize = screenSize;
+		this.pageSize = screenSize;
 		this.blockSize = blockSize;
 	}
 
-	public void setTotalRecord(int totalRecord) {
-		this.totalRecord = totalRecord;
-		
-		totalPage = (int) Math.ceil(totalRecord / (double) screenSize);
+	public void setTotalCount(int totalRecord) {
+		this.totalCount = totalRecord;
+		totalPage = (int) Math.ceil(totalRecord / (double) pageSize);
 	}
 
 	public void setCurrentPage(int currentPage) {
 		this.currentPage = currentPage;
-		endRow = currentPage * screenSize;
-		startRow = endRow - (screenSize - 1) - 1;
-		
-		endPage = (currentPage + (blockSize - 1)) / blockSize * blockSize;
-		startPage = endPage - (blockSize - 1);
+
+		this.startRow = (currentPage - 1) * pageSize;
+		this.endRow = startRow + pageSize;
+
+		this.endPage = (currentPage + (blockSize - 1)) / blockSize * blockSize;
+		this.startPage = endPage - (blockSize - 1);
 	}
 
 	public String getPagingHTML() {
-		StringBuffer html = new StringBuffer();
+		StringBuilder html = new StringBuilder();
 		
 		html.append("<ul class='pagination pagination-sm m-0 float-right'>");
 		
 		if(startPage > 1) {
-			html.append("<li class='page-item'><a href='' class='page-link' data-page='" + (startPage - blockSize) + "'>Prev</a></li>");
+			html.append("<li class='page-item'><a href='' class='page-link' data-page='").append(startPage - blockSize).append("'>Prev</a></li>");
 		}
 		
-		for(int i = startPage; i <= (endPage < totalPage ? endPage : totalPage); i++) {
+		for(int i = startPage; i <= Math.min(endPage, totalPage); i++) {
 			if(i == currentPage) {
-				html.append("<li class='page-item active'><span class='page-link'>" + i + "</span></li>");
+				html.append("<li class='page-item active'><span class='page-link'>").append(i).append("</span></li>");
 			} else {
-				html.append("<li class='page-item'><a href='' class='page-link' data-page='" + i + "'>" + i + "</a></li>");
+				html.append("<li class='page-item'><a href='' class='page-link' data-page='").append(i).append("'>").append(i).append("</a></li>");
 			}
 		}
 		
 		if(endPage < totalPage) {
-			html.append("<li class='page-item'><a href='' class='page-link' data-page='" + (endPage + 1) + "'>Next</a></li>");
+			html.append("<li class='page-item'><a href='' class='page-link' data-page='").append(endPage + 1).append("'>Next</a></li>");
 		}
 		
 		html.append("</ul>");

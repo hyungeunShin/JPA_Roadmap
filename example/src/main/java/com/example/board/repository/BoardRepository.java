@@ -46,7 +46,7 @@ public class BoardRepository {
                     .fetchJoin()
                     .where(builder)
                     .orderBy(board.id.desc())
-                    .limit(paginationInfo.getScreenSize())
+                    .limit(paginationInfo.getPageSize())
                     .offset(paginationInfo.getStartRow())
                     .fetch();
     }

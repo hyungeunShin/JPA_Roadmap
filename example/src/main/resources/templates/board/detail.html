@@ -28,7 +28,7 @@
 												<span class="mailbox-attachment-size clearfix mt-1">
 													<span>[[${file.fileFancySize}]]</span>
 
-													<a href="/board/attach/download?id=0" th:href="@{/attach/download(id = ${file.id})}">
+													<a href="/attach/download?id=0" th:href="@{/attach/download(id = ${file.id})}">
 														<span class="btn btn-default btn-sm float-right">
 															<i class="fas fa-download"></i>
 														</span>
@@ -42,7 +42,7 @@
 						</form>
 						<div class="card-footer">
 							<button type="button" id="listBtn" th:onclick="|location.href='@{/board/list}'|" class="btn btn-primary">목록</button>
-							<th:block th:if="${#strings.equals(board.userId, #authentication.principal.id)}">
+							<th:block th:if="${board.userId == #authentication.principal.id}">
 								<button type="button" id="modifyBtn" th:onclick="|location.href='@{/board/edit/{boardId}(boardId = ${board.id})}'|" class="btn btn-info">수정</button>
 								<button type="button" id="delBtn" class="btn btn-danger">삭제</button>
 							</th:block>

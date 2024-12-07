@@ -42,28 +42,19 @@ public class Board extends TimeEntity {
         this.user = user;
     }
 
-    public void increaseHit() {
-        ++this.boardHit;
-    }
-
     public void addAttachFile(AttachFile attachFile) {
-        attachFile.attachBoard(this);
+        attachFile.attachToBoard(this);
         this.files.add(attachFile);
     }
 
-    public List<String> deleteFiles(Long[] delFileNo) {
-        List<String> uploadPaths = new ArrayList<>();
-
+    public void deleteFiles(Long[] delFileNo) {
         for(int i = 0; i < this.files.size(); i++) {
             for(Long id : delFileNo) {
-                if(this.files.get(i).getId().equals(id)) {
-                    uploadPaths.add(this.files.get(i).getUploadFilePath());
+                if(id.equals(this.files.get(i).getId())) {
                     this.files.remove(i);
                 }
             }
         }
-
-        return uploadPaths;
     }
 
     public void editBoard(String boardTitle, String boardContent) {

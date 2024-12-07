@@ -10,13 +10,13 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
@@ -151,10 +151,6 @@ public class UserController {
     @PostMapping("/findPassword")
     public String findPassword(@Validated @ModelAttribute("user") FindPasswordDTO dto, BindingResult bindingResult, Model model, HttpServletRequest request) {
         if(bindingResult.hasErrors()) {
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                log.info("{}", fieldError);
-                log.info("{}", fieldError.getDefaultMessage());
-            }
             return "user/findPassword";
         }
 
@@ -170,7 +166,7 @@ public class UserController {
 
     @PostMapping("/resetPassword")
     public String resetPw(@Validated @ModelAttribute("user") ResetPasswordDTO dto, BindingResult bindingResult, RedirectAttributes ra, HttpServletRequest request) {
-        if(!StringUtils.equals(dto.getNewPassword(), dto.getCheckPassword())) {
+        if(!org.apache.commons.lang3.StringUtils.equals(dto.getNewPassword(), dto.getCheckPassword())) {
             bindingResult.addError(new FieldError("user", "checkPassword", messageSource.getMessage("Not.Same.Password", null, request.getLocale())));
         }
 
@@ -191,8 +187,7 @@ public class UserController {
     @GetMapping("/profile")
     public String profileForm(Model model) {
         CustomUser user = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        EditUserViewDTO dto = userService.findUser(user.getId());
-        log.info("profile : {}", dto);
+        EditUserDTO dto = userService.findUser(user.getId());
         model.addAttribute("user", dto);
         return "user/profile";
     }
@@ -203,9 +198,19 @@ public class UserController {
             return "user/profile";
         }
 
+        CustomUser principal = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(userService.duplicatedEmail(principal.getId(), dto.getEmail())) {
+            model.addAttribute("message", messageSource.getMessage("Duplicate.Email", null, request.getLocale()));
+            return "user/profile";
+        }
+
+        if(StringUtils.hasText(dto.getNewPassword()) && StringUtils.hasText(dto.getCheckPassword()) && !dto.getNewPassword().equals(dto.getCheckPassword())) {
+            model.addAttribute("message", messageSource.getMessage("Not.Same.Password", null, request.getLocale()));
+            return "user/profile";
+        }
+
         try {
-            User user = userService.edit(dto);
-            CustomUser customUser = new CustomUser(user);
+            CustomUser customUser = userService.edit(principal.getId(), dto);
             SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(customUser, null, customUser.getAuthorities()));
             ra.addFlashAttribute("message", "프로필이 수정되었습니다.");
             return "redirect:/profile";

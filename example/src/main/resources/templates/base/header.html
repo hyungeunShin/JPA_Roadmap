@@ -20,9 +20,9 @@
 
 			<div class="sidebar">
 				<div class="user-panel mt-3 pb-3 mb-3 d-flex">
-					<th:block sec:authorize="isAuthenticated()" th:with="profilePath=${#authentication.principal.profile == null} ? '/dist/img/profile_img.jpg' : '/images/' + ${#authentication.principal.profile}">
+					<th:block sec:authorize="isAuthenticated()" th:with="fileName=${#authentication.principal.profile == null} ? '/dist/img/profile_img.jpg' : '/uploadFiles/' + ${#authentication.principal.profile}">
 						<div class="image">
-							<img class="img-circle elevation-2" th:src="@{${profilePath}}" alt="User profile picture">
+							<img class="img-circle elevation-2" th:src="@{${fileName}}" alt="User profile picture">
 						</div>
 						<div class="info">
 							<a th:href="@{/profile}" class="d-block" th:text="${#authentication.principal.username}"></a>

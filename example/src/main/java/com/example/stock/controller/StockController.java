@@ -46,7 +46,7 @@ public class StockController {
         paginationInfo.setCurrentPage(currentPage);
 
         int totalRecord = service.getStockTotalCount(paginationInfo);
-        paginationInfo.setTotalRecord(totalRecord);
+        paginationInfo.setTotalCount(totalRecord);
 
         List<StockListDTO> dataList = service.getStockList(paginationInfo);
         paginationInfo.setDataList(dataList);

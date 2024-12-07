@@ -12,7 +12,6 @@
 	<link rel="stylesheet" href="../../static/dist/css/adminlte.min.css" th:href="@{/dist/css/adminlte.min.css}">
 	
 	<script type="text/javascript" src="../../static/plugins/jquery/jquery.min.js" th:src="@{/plugins/jquery/jquery.min.js}"></script>
-	<script type="text/javascript" src="../../static/ckeditor/ckeditor.js" th:src="@{/ckeditor/ckeditor.js}"></script>
 
 	<style>
 		.minus {
@@ -28,22 +27,24 @@
 </head>
 
 <body class="hold-transition sidebar-mini">
-	
-	<script th:inline="javascript">
-		let message = [[${message}]];
-
-		if(message) {
-			alert(message);
-		}
-	</script>
-	
 	<div class="wrapper">
 		<div th:replace="~{base/header :: mainHeader}"></div>
 		
 		<div class="content-wrapper">
 			<section class="content-header"></section>
 			<div th:replace="${section}"></div>
-			<script th:replace="${script}"></script>
+
+			<script th:inline="javascript">
+				let message = [[${message}]];
+
+				if(message) {
+					alert(message);
+				}
+			</script>
+
+			<th:block th:if="${script != null}">
+				<script th:replace="${script}"></script>
+			</th:block>
 		</div>
 		
 		<div th:replace="~{base/footer :: mainFooter}"></div>

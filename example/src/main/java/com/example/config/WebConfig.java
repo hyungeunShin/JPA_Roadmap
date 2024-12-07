@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler(resourceHandler + "**")
+        registry.addResourceHandler(resourceHandler)
                 .addResourceLocations(resourceLocation);
     }
 
@@ -27,6 +27,7 @@ public class WebConfig implements WebMvcConfigurer {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasenames("messages", "errors");
         messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setCacheSeconds(60);
         return messageSource;
     }
 }

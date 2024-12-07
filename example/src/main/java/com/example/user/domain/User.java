@@ -77,7 +77,9 @@ public class User extends TimeEntity {
         this.email = email;
         this.phone = phone;
         this.address = address;
-        this.profile = profile;
+        if(profile != null) {
+            this.profile = profile;
+        }
     }
 
     public void changePassword(String password) {

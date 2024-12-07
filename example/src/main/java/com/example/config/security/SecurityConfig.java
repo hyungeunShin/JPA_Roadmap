@@ -25,7 +25,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
                            .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-                           .requestMatchers("/ckeditor/**", "/dist/**", "/plugins/**", "/error");
+                           .requestMatchers("/dist/**", "/plugins/**", "/error");
     }
 
     @Bean
@@ -33,7 +33,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable).cors(AbstractHttpConfigurer::disable);
 
         String[] permitAllRequest = {"/login", "/register", "/duplicatedId", "/duplicatedEmail",
-                "/findId", "/findPassword", "/authenticateEmail", "/verifyCode", "/resetPassword", "/"};
+                "/findId", "/findPassword", "/authenticateEmail", "/verifyCode", "/resetPassword", "/", "/getYsBusStatInfo"};
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                     .requestMatchers(permitAllRequest).permitAll()

@@ -35,7 +35,7 @@ public class StockItemReader implements ItemReader<APIResponseDTO> {
     }
 
     @Override
-    public APIResponseDTO read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public APIResponseDTO read() throws UnexpectedInputException, ParseException, NonTransientResourceException {
         log.info("ApiItemReader.read 시작 pageNo : {}", pageNo);
 
         if(isFinished) {

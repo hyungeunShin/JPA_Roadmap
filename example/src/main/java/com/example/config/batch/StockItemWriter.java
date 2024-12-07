@@ -13,7 +13,6 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class StockItemWriter implements ItemWriter<List<Stock>> {
-
     private final StockJpaRepository repository;
 
     @Override

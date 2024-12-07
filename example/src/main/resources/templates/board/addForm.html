@@ -45,23 +45,4 @@
 			</div>
 		</div>
 	</section>
-	<script type="text/javascript">
-	(function(W, D, $) {
-		'use strict';
-		W.$Register = W.$Register || {};
-
-		$(document).ready(function() {
-			$Register.ui.pageLoad();
-		});
-
-		$Register.ui = {
-			pageLoad: function() {
-				CKEDITOR.replace("boardContent", {
-					footnotesPrefix: "a",
-					filebrowserUploadUrl: '/attach/upload'
-				});
-			}
-		}
-	}(window, document, jQuery))
-	</script>
 </html>

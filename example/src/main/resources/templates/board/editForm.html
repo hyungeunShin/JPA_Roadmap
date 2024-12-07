@@ -82,11 +82,6 @@
 
 		$Edit.ui = {
 			pageLoad: function() {
-				CKEDITOR.replace("boardContent", {
-					footnotesPrefix: "a",
-					filebrowserUploadUrl: '/attach/upload'
-				});
-
 				$(".attachmentFileDel").on("click", function(event) {
 					let no = $(event.target).data('fileno');
 					console.log(no);

@@ -1,15 +1,17 @@
 package com.example.board.controller;
 
-import com.example.board.dto.BoardDetailDTO;
-import com.example.board.dto.BoardListDTO;
 import com.example.board.dto.EditBoardDTO;
 import com.example.board.dto.RegisterBoardDTO;
 import com.example.board.service.BoardService;
-import com.example.util.FileStore;
-import com.example.util.PaginationInfo;
+import com.example.user.domain.CustomUser;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,7 +21,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -28,8 +29,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService service;
-
-    private final FileStore fileStore;
+    private final MessageSource messageSource;
 
     @ModelAttribute("searchTypes")
     public Map<String, String> searchTypes() {
@@ -42,30 +42,21 @@ public class BoardController {
     }
 
     @GetMapping("/list")
-    public String list(@RequestParam(name = "page", required = false, defaultValue = "1") int currentPage
-                       , @RequestParam(name = "searchType", required = false, defaultValue = "title") String searchType
-                       , @RequestParam(name = "searchWord", required = false) String searchWord
-                       , Model model) {
-        log.info("currentPage: " + currentPage);
+    public String list(
+            @PageableDefault Pageable pageable
+            , @RequestParam(name = "searchType", required = false, defaultValue = "title") String searchType
+            , @RequestParam(name = "searchWord", required = false) String searchWord
+            , Model model) {
+        log.info("currentPage: " + pageable);
         log.info("searchType: " + searchType);
         log.info("searchWord: " + searchWord);
 
-        PaginationInfo<BoardListDTO> paginationInfo = new PaginationInfo<>();
-
         if(StringUtils.isNotBlank(searchWord)) {
-            paginationInfo.setSearchType(searchType);
-            paginationInfo.setSearchWord(searchWord);
+            model.addAttribute("searchType", searchType);
+            model.addAttribute("searchWord", searchWord);
         }
 
-        paginationInfo.setCurrentPage(currentPage);
-
-        int totalRecord = service.getBoardTotalCount(paginationInfo);
-        paginationInfo.setTotalRecord(totalRecord);
-
-        List<BoardListDTO> dataList = service.getBoardList(paginationInfo);
-        paginationInfo.setDataList(dataList);
-
-        model.addAttribute("paginationInfo", paginationInfo);
+        model.addAttribute("boardList", service.getBoardList(pageable, searchType, searchWord));
 
         return "board/list";
     }
@@ -76,95 +67,78 @@ public class BoardController {
     }
 
     @PostMapping("/register")
-    public String register(@Validated @ModelAttribute("board") RegisterBoardDTO dto, BindingResult bindingResult, Model model, RedirectAttributes ra) {
-        log.info("register.board = {}", dto.toString());
-        log.info("files.length : {}", dto.getBoardFile().length);
+    public String register(@Validated @ModelAttribute("board") RegisterBoardDTO dto, BindingResult bindingResult, Model model, RedirectAttributes ra, HttpServletRequest request) {
+        log.info("게시판 등록 : {}", dto);
 
         if(bindingResult.hasErrors()) {
             return "board/addForm";
         }
 
-        Long id = null;
         try {
-            id = service.saveBoard(dto);
-        } catch(IOException e) {
-            model.addAttribute("message", "다시 시도해주세요.");
-            return "board/addForm";
-        }
-
-        if(id != null) {
-            ra.addFlashAttribute("message", "게시글이 등록되었습니다.");
+            CustomUser principal = (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Long id = service.saveBoard(dto, principal.getId());
+            ra.addFlashAttribute("message", messageSource.getMessage("Success.Save.Board", null, request.getLocale()));
             ra.addAttribute("id", id);
             return "redirect:/board/detail/{id}";
-        } else {
-            model.addAttribute("message", "다시 시도해주세요.");
+        } catch(IOException e) {
+            model.addAttribute("message", messageSource.getMessage(e.getMessage(), null, request.getLocale()));
             return "board/addForm";
         }
     }
 
     @GetMapping("/detail/{id}")
-    public String detail(@PathVariable("id") Long id, Model model, RedirectAttributes ra) {
+    public String detail(@PathVariable("id") Long id, Model model, RedirectAttributes ra, HttpServletRequest request) {
         try {
-            BoardDetailDTO dto = service.findBoardDetail(id);
-            model.addAttribute("board", dto);
+            model.addAttribute("board", service.findBoardDetail(id));
             return "board/detail";
         } catch(NullPointerException e) {
-            ra.addFlashAttribute("message", "존재하지 않는 게시글입니다.");
+            ra.addFlashAttribute("message", messageSource.getMessage("Not.Found.Board", null, request.getLocale()));
             return "redirect:/board/list";
         }
     }
 
     @GetMapping("/edit/{id}")
-    public String editForm(@PathVariable("id") Long id, Model model, RedirectAttributes ra) {
+    public String editForm(@PathVariable("id") Long id, Model model, RedirectAttributes ra, HttpServletRequest request) {
         try {
-            BoardDetailDTO boardDetailDTO = service.findBoardDetail(id);
-            model.addAttribute("board", boardDetailDTO);
+            model.addAttribute("board", service.findBoardDetail(id));
             return "board/editForm";
         } catch(NullPointerException e) {
-            ra.addFlashAttribute("message", "존재하지 않는 게시글입니다.");
+            ra.addFlashAttribute("message", messageSource.getMessage("Not.Found.Board", null, request.getLocale()));
             return "redirect:/board/list";
         }
     }
 
     @PostMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Long id, @Validated @ModelAttribute("board") EditBoardDTO dto, BindingResult bindingResult,
-                       Model model, RedirectAttributes ra) {
+    public String edit(@PathVariable("id") Long id, @Validated @ModelAttribute("board") EditBoardDTO dto, BindingResult bindingResult, Model model,
+                       RedirectAttributes ra, HttpServletRequest request) {
         log.info("수정할 게시판 번호 : {}", id);
         log.info("수정할 게시판 데이터 : {}", dto);
 
         if(bindingResult.hasErrors()) {
-            BoardDetailDTO boardDetailDTO = service.findBoardDetail(id);
-            model.addAttribute("board", boardDetailDTO);
+            model.addAttribute("board", service.findBoardDetail(id));
             return "board/editForm";
         }
 
         try {
-            List<String> uploadPaths = service.editBoard(dto);
-            if(uploadPaths != null) {
-                for(String uploadPath : uploadPaths) {
-//                    fileStore.deleteFile(uploadPath);
-                }
-            }
-
-            ra.addFlashAttribute("message", "수정되었습니다.");
+            service.editBoard(dto);
+            ra.addFlashAttribute("message", messageSource.getMessage("Success.Edit.Board", null, request.getLocale()));
             return "redirect:/board/detail/{id}";
-        } catch (IOException e) {
-            model.addAttribute("message", "다시 시도해주세요.");
-            BoardDetailDTO boardDetailDTO = service.findBoardDetail(id);
-            model.addAttribute("board", boardDetailDTO);
+        } catch(IOException e) {
+            model.addAttribute("message", messageSource.getMessage(e.getMessage(), null, request.getLocale()));
+            model.addAttribute("board", service.findBoardDetail(id));
             return "board/editForm";
         }
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable("id") Long id, RedirectAttributes ra) {
+    public String delete(@PathVariable("id") Long id, RedirectAttributes ra, HttpServletRequest request) {
         log.info("{}", id);
 
         try {
             service.deleteBoard(id);
-            ra.addFlashAttribute("message", "게시글이 삭제되었습니다.");
+            ra.addFlashAttribute("message", messageSource.getMessage("Success.Delete.Board", null, request.getLocale()));
         } catch(NullPointerException e) {
-            ra.addFlashAttribute("message", "다시 시도해주세요.");
+            ra.addFlashAttribute("message", messageSource.getMessage("Not.Found.Board", null, request.getLocale()));
         }
 
         return "redirect:/board/list";

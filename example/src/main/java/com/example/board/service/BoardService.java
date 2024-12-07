@@ -1,21 +1,23 @@
 package com.example.board.service;
 
-import com.example.board.dto.*;
-import com.example.util.PaginationInfo;
+import com.example.board.dto.BoardDetailDTO;
+import com.example.board.dto.BoardListDTO;
+import com.example.board.dto.EditBoardDTO;
+import com.example.board.dto.RegisterBoardDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface BoardService {
-    List<BoardListDTO> getBoardList(PaginationInfo<BoardListDTO> paginationInfo);
+    Page<BoardListDTO> getBoardList(Pageable pageable, String searchType, String searchWord);
 
-    int getBoardTotalCount(PaginationInfo<BoardListDTO> paginationInfo);
-
-    Long saveBoard(RegisterBoardDTO dto) throws IOException;
+    Long saveBoard(RegisterBoardDTO dto, Long userId) throws IOException;
 
     BoardDetailDTO findBoardDetail(Long id);
 
-    List<String> editBoard(EditBoardDTO dto) throws IOException;
+    void editBoard(EditBoardDTO dto) throws IOException;
 
     void deleteBoard(Long id);
 }
