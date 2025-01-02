@@ -9,9 +9,11 @@ import com.example.board.dto.RegisterBoardDTO;
 import com.example.board.repository.BoardJpaRepository;
 import com.example.user.domain.User;
 import com.example.user.repository.UserJpaRepository;
+import com.example.util.CustomPageImpl;
 import com.example.util.FileStore;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,9 +33,12 @@ public class BoardServiceImpl implements BoardService {
     private final UserJpaRepository userRepository;
     private final FileStore fileStore;
 
+    @Cacheable(value = "getBoardList", key = "'getBoardList' + #searchType + #searchWord")
     @Override
     public Page<BoardListDTO> getBoardList(Pageable pageable, String searchType, String searchWord) {
-        return boardRepository.findAllWithPaging(pageable, searchType, searchWord);
+//        return boardRepository.findAllWithPaging(pageable, searchType, searchWord);
+        Page<BoardListDTO> page = boardRepository.findAllWithPaging(pageable, searchType, searchWord);
+        return new CustomPageImpl<>(page.getContent(), pageable, page.getTotalElements());
     }
 
     @Override
