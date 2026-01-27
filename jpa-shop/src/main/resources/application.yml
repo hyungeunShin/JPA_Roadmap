@@ -23,7 +23,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-#        default_batch_fetch_size: 100
+        default_batch_fetch_size: 100
 #    open-in-view: false
 
 logging:
@@ -31,6 +31,6 @@ logging:
     org:
       hibernate:
         SQL: DEBUG
-        orm:
-          jdbc:
-            bind: TRACE
+#        orm:
+#          jdbc:
+#            bind: TRACE
